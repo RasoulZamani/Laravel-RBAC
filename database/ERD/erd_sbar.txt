@@ -1,0 +1,866 @@
+// ****************************************
+// DB for Sedaghat Bar app for Safer.
+// **************************************
+
+// ***************************************************
+//  Persons
+// **********************************************
+// person info 
+Table persons {
+  id int
+  name string
+  gender string 
+  last_name string
+  alias_name string// نام مستعار
+  father_name string
+  is_legal bool // برای اشخاص حقوقی  
+  national_code string unique // کد حقوقی بجای کد ملی برای اشخاص حقوقی
+  image_id int
+  mobile_phone string unique
+  email email 
+  birth_date datetime
+  is_active bool
+  education_level int
+   
+  // timestamps
+  created_at datetime
+  updated_at datetime
+  deleted_at datetime
+}
+
+// eduaction level// مقطع تحصیلی
+Table education_levels {
+  id int
+  title string 
+  description text
+  // timestamps
+  created_at datetime
+  updated_at datetime
+  deleted_at datetime
+}
+
+// user info (anybody can login with phone and password is a user)
+Table users {
+  id int
+  username string 
+  password string // min:8
+  type_id int
+  person_id int
+  role_id int
+  // timestamps
+  created_at datetime
+  updated_at datetime
+  deleted_at datetime
+}
+
+// type of user can be worker, driver, client, staf,
+Table user_types {
+  id int
+  title string 
+  description text
+  // timestamps
+  created_at datetime
+  updated_at datetime
+  deleted_at datetime
+}
+
+// drivers 
+Table drivers {
+  id int
+  license_image string //  تصویر گواهی نامه
+  license_code string
+  has_smart_card bool // Mr Frotan wants this in addition to expiration time
+  has_health_card bool
+  start_of_driving datetime // for calculating driver background year
+  license_expiration datetime
+  smart_card_expiration datetime 
+  health_card_expiration datetime
+  is_confirmed bool // if driver is confirmed by staff or not
+  person_id int 
+  type_id int
+  license_type_id int
+  // timestamps
+  created_at datetime
+  updated_at datetime
+  deleted_at datetime
+}
+
+Table license_types {
+  id int
+  title string
+  description string
+  // timestamps
+  created_at datetime
+  updated_at datetime
+  deleted_at datetime
+}
+
+Table driver_types {
+  id int
+  title string
+  description text
+  // timestamps
+  created_at datetime
+  updated_at datetime
+  deleted_at datetime
+}
+
+// clients
+Table clients {
+  id int
+  client_code string
+  person_id int
+  introduction_method_id int
+  // timestamps
+  created_at datetime
+  updated_at datetime
+  deleted_at datetime
+}
+// how you know Sedaghat bar, like social network, billboards, ...
+Table introduction_methods {
+  id int
+  title string
+  description text
+  // timestamps
+  created_at datetime
+  updated_at datetime
+  deleted_at datetime
+}
+
+// workers 
+Table workers {
+  id int
+  worker_code string
+  person_id int
+  type_id int
+  // timestamps
+  created_at datetime
+  updated_at datetime
+  deleted_at datetime
+}
+// worker_services can be normal worker, profesional, ...
+Table worker_services {
+  id int
+  title string
+  description string
+  gender string // f, m or both
+  image_id int // main image of this type 
+  // pricing workers based on their types and hours
+  normal_hours_limit decimal(3,2) // e.g: 3 hours
+  extra_window_min int // we calculate extras based on this window, e.g. if it is 15 min,
+  // from 0-14:59 sec consider one extra cost, 15-29:59 consider two extra cost
+  price_1hour_under_limit_in_toman int //each hour cost this value, until total hours reaches limit
+  price_extra_window_in_toman int       // each extra window more than limit, cost this value
+  discount_price_under_limit int
+  discount_price_extra_window int
+  discount_price int
+
+  // timestamps
+  created_at datetime
+  updated_at datetime
+  deleted_at datetime
+}
+// pivot table for assign workers to worker_house
+Table worker_worker_house {
+  id int
+  worker_id int
+  worker_house_id int
+  // timestamps
+  created_at datetime
+  updated_at datetime
+  deleted_at datetime
+}
+// staffs - کارمندان
+Table staffs {
+  id int
+  staff_code string
+  type_id int
+  person_id int
+  // timestamps
+  created_at datetime
+  updated_at datetime
+  deleted_at datetime
+}
+Table staff_types {
+  id int
+  title string
+  description text
+  // timestamps
+  created_at datetime
+  updated_at datetime
+  deleted_at datetime
+}
+
+// images 
+Table images {
+  id int
+  name string // contains subfolder and extentions
+  description text 
+  imageable_type string // this image belong to witch table (model)
+  imageable_id int // this image belong to this instanse from that table name
+  // timestamps
+  created_at datetime
+  updated_at datetime
+  deleted_at datetime
+}
+
+// *****************************************************
+//       Access Control
+// *****************************************************
+// roles
+Table roles {
+  id int
+  title string
+  description text
+  // timestamps
+  created_at datetime
+  updated_at datetime
+  deleted_at datetime
+}
+
+Table permissions {
+  id int
+  title string unique //like 'order:update'// timestamps
+  // title should be descriptive, so no description field required
+  // timestamps
+  created_at datetime
+  updated_at datetime
+  deleted_at datetime
+}
+
+// for assigning permissions to roles
+Table permission_role {
+  id int
+  role_id int
+  permission_id int
+  // timestamps
+  created_at datetime
+  updated_at datetime
+  deleted_at datetime
+}
+
+// for assigning permissions to users based on its role
+Table permission_user {
+  id int
+  user_id int
+  permission_id int
+  // timestamps
+  created_at datetime
+  updated_at datetime
+  deleted_at datetime
+}
+
+// ****************************************************
+//         Finance 
+//********************************************
+
+// financial account info of a person
+Table financial_accounts {
+  bank_name string
+  cart_code int     // شماره کارت
+  account_code int  // شماره حساب
+  shaba_code int    // شماره شبا
+  is_active bool    
+  person_id int
+  // timestamps
+  created_at datetime
+  updated_at datetime
+  deleted_at datetime
+}
+
+// finantial reference for specifying source of money
+Table financial_references {
+  id int
+  title string // like order_commission, sail_product_commission, driver_payment
+  description text 
+  // timestamps
+  created_at datetime
+  updated_at datetime
+  deleted_at datetime
+}
+
+// wallet
+Table wallets {
+  id int
+  blocked_in_toman int
+  credit_in_toman int  // can be negetive too
+  user_id int 
+  // timestamps
+  created_at datetime
+  updated_at datetime
+  deleted_at datetime
+}
+
+Table transactions {
+  id int
+  status bool // success or failed
+  credit int // in each transaction recored one of 'dept' or credit has value
+  dept int
+  tracking_code int // کد رهگیری تراکنش
+  order_code int // کد سفارش تراکنش
+  financial_reference_id int // source type 
+  payment_type_id int
+  wallet_id int // for payments by wallet
+  order_id int // if transactions associated to order
+  // timestamps
+  created_at datetime
+  updated_at datetime
+  deleted_at datetime
+}
+// type of payment: online or by wallet (offline with image can be added later)
+Table payment_types {
+  id int
+  title string
+  description text
+
+  // timestamps
+  created_at datetime
+  updated_at datetime
+  deleted_at datetime
+}
+
+// driver can request money from its wallet
+Table driver_request_money{
+  id int
+  driver_id int
+  required_price int // how much money want from his wallet
+  confirmed bool // confirmed by cashier or not
+  cashier_id int 
+  paid bool // if money paid by company 
+  // details will recorded in "transations" with driver wallet_id 
+  // timestamps
+  created_at datetime
+  updated_at datetime
+  deleted_at datetime
+  
+
+}
+// 
+// **************************************************
+//          Address 
+// **************************************************
+// general address
+Table addresses {
+  id int
+  person_id int
+  title string
+  label_color string // front wants label for color
+  constant_phone string 
+  state_id id // استان
+  city_id id
+  address text // آدرس کامل
+  block_name text
+  plak int
+  unit string
+  post_code int 
+  lat decimal(10,8)
+  long decimal(11,8)
+  // timestamps
+  created_at datetime
+  updated_at datetime
+  deleted_at datetime
+}
+Table cities {
+  id int
+  name string
+  code string
+}
+Table states {
+  id int
+  name string
+  code string
+}
+
+// address for orders need more information
+Table address_extras {
+  id int
+  address_id int
+  floor string
+  lifter_available bool // آسانسور برای اسباب کشی در دسترس است یا خیر
+  walking_in_meter int // فاصله پیاده روی تا مبدا در صورت وجود
+}
+
+// worker house
+Table worker_houses {
+  id int
+  title string
+  description text
+  address_id int
+  // timestamps
+  created_at datetime
+  updated_at datetime
+  deleted_at datetime
+}
+
+//******************************************
+// Car 
+// *****************************************
+
+// car information
+Table cars {
+  id int
+  title string
+  description text
+  vin string //identifier code for car
+  chassisـcode string // شماره شاسی
+  engine_code string // شماره موتور
+  body_code string  // شماره بدنه
+  technical_visit_expiration datetime // اعتبار معاینه فنی
+  insure_expiration datetime // اعتبار بیمه نامه
+  type_id int 
+  color string
+  owner_id int // real owner
+  assigned_to int   // id of last body that this car is  assigned to, driver or collector of company
+  plate string
+  // timestamps
+  created_at datetime
+  updated_at datetime
+  deleted_at datetime 
+}
+
+// type of cars that we provide for clients
+Table car_services {
+  id int
+  name string // vanet, kamion, ...
+  description text
+  image_id int // main image for this type
+  // pricing this type of car based on hours limit
+  normal_hours_limit decimal(3,2) // e.g: 3 hours
+  extra_window_min int // we calculate extras based on this window, e.g. if it is 15 min,
+  // from 0-14:59 sec consider one extra cost, 15-29:59 consider two extra cost
+  price_1hour_under_limit_in_toman int //each hour cost this value, until total hours reaches limit
+  price_extra_window_in_toman int       // each extra window more than limit, cost this value
+  discount_price_under_limit int
+  discount_price_extra_window int
+  // timestamps
+  created_at datetime
+  updated_at datetime
+  deleted_at datetime
+}
+
+// assign car to driver 
+Table car_driver {
+  id int
+  car_id int
+  driver_id int
+  collector_id int // sometimes cars are delivered to collector of company
+  delivered_at datetime
+  // timestamps
+  created_at datetime
+  updated_at datetime
+  deleted_at datetime
+}
+
+// assign car to collector of company 
+Table car_collector {
+  id int
+  car_id int
+  collector_id int // sometimes cars are delivered to collector of company
+  delivered_at datetime
+  // timestamps
+  created_at datetime
+  updated_at datetime
+  deleted_at datetime
+}
+
+// ***************************************
+// Order
+// ***************************************
+
+// Shop
+Table shops {
+  id int
+  title string
+  description text
+  image_id int
+  address_id int
+  manager_id int 
+  opened_at datetime
+  closed_at datetime
+  // timestamps
+  created_at datetime
+  updated_at datetime
+  deleted_at datetime
+}
+
+// products 
+Table products {
+  id int
+  title string
+  description text
+  number int
+  image_id int
+  price_in_toman int
+  discount_price int
+  shop_id int 
+  // timestamps
+  created_at datetime
+  updated_at datetime
+  deleted_at datetime
+}
+
+Table priced_furnitures {
+  id int
+  title string
+  description text
+  image_id int // main image of this furniture
+  base_price_in_toman int
+  price_extra_floor_in_toman int // if lifter not available
+  price_walk_in_meter_in_toman int // if there is distance from car to destination
+  discount_price int
+  // timestamps
+  created_at datetime
+  updated_at datetime
+  deleted_at datetime
+}
+
+// order 
+Table orders {
+  id int
+  client_id int
+  registerant_id int // if order in placed by phone from client to supporter 
+  delivery_needed_at datetime // when client wants this order 
+  type_id int // from shop, drivers and workers
+  status_id int
+
+  source_address_id int 
+  destination_address_id int
+  started_at datetime
+  finished_at datetime // this two field will fill by driver and are base of price calculations
+  // timestamps
+  created_at datetime
+  updated_at datetime
+  deleted_at datetime
+}
+
+// car types assigned to orders by client 
+Table car_service_order {
+  id int
+  order_id int
+  car_service_id int
+  quantity int
+  totla_price int // will fill in app when order is finalized and done, based on car_services table
+  // timestamps
+  created_at datetime
+  updated_at datetime
+  deleted_at datetime
+}
+// cars assigned to order by staffs
+Table car_order {
+  id int
+  order_id int
+  car_id int
+  price int // will fill in app when order is finalized and done, based on car_services table
+  // timestamps
+  created_at datetime
+  updated_at datetime
+  deleted_at datetime
+}
+//stops in the middle of trip
+Table order_stop {
+  id int
+  order_id int
+  stop_middle_address_id int
+  stop_middle_time_minutes int
+  // price of stop time will calculate with total time
+  // timestamps
+  created_at datetime
+  updated_at datetime
+  deleted_at datetime
+}
+
+// pivot table for add worker-type to order by client
+Table order_worker_service {
+  id int
+  order_id int
+  worker_service_id int
+  quantity int
+  total_price int // will fill in app when order is finalized and done, based on worker_services table
+  // timestamps
+  created_at datetime
+  updated_at datetime
+  deleted_at datetime
+}
+
+// pivot table for add worker-type to order by staff
+Table order_worker {
+  id int
+  order_id int
+  worker_id int
+  price int // will fill in app when order is finalized and done, based on worker_services table
+  // timestamps
+  created_at datetime
+  updated_at datetime
+  deleted_at datetime
+}
+
+// pivot table for add priced_furniture to order
+Table order_priced_furniture {
+  id int
+  order_id int
+  priced_furniture_id int
+  quantity int
+  totla_price int // will fill in app when order is finalized and done, based on priced_furnitures table
+  // timestamps
+  created_at datetime
+  updated_at datetime
+  deleted_at datetime
+}
+
+// pivot table for add products to order
+Table order_product {
+  id int
+  order_id int
+  product_id int
+  quantity int
+  totla_price int // will fill in app when order is finalized and done, based on product table
+  // timestamps
+  created_at datetime
+  updated_at datetime
+  deleted_at datetime
+}
+
+// type of order, can be shop, driver, worker, ...
+Table order_types {
+  id int 
+  title string // 
+  description text
+  // timestamps
+  created_at datetime
+  updated_at datetime
+  deleted_at datetime
+}
+// rating for example 1 (bad) to 5 (for excellent)
+Table rate_numbers {
+  id int
+  title string
+  description int
+  // timestamps
+  created_at datetime
+  updated_at datetime
+  deleted_at datetime
+}
+ // biderctional comments in two main categories: good and bad! 
+// rate details given to a client by driver
+Table client_rate_details {
+  id int
+  order_id int
+  commenter_driver_id int // order can has more than one driver
+  rate_number_id int
+  description text
+  good_addressing bool // آدرس دهی خوب توسط مشتری
+  good_catering bool //  پذیرایی غذایی
+
+// ? other comments
+
+  bad_catering bool
+  bad_addressing bool
+
+  // timestamps
+  created_at datetime
+  updated_at datetime
+  deleted_at datetime
+}
+
+// rate details given to a driver by client
+Table driver_rate_details {
+  id int
+  order_id int
+  commented_driver_id int
+  rate_number_id int
+  description text
+  good_driving bool
+  good_packaging bool
+  good_delivering bool
+  good_behavior bool
+
+  // ? other comments
+
+  bad_driving bool
+  bad_packaging bool
+  bad_delivering bool
+  bad_behavior bool
+  bad_request_of_extra_money bool
+  
+  // timestamps
+  created_at datetime
+  updated_at datetime
+  deleted_at datetime
+}
+
+// assign advanced payment to order in special cases like long distanse or hesitant clints
+Table advanced_payments {
+  id int
+  order_id int
+  registrant_id int // who set this advanced_payment
+  price int 
+  description text
+  is_paid bool 
+  // timestamps
+  created_at datetime
+  updated_at datetime
+  deleted_at datetime
+}
+
+// supporter call to client for coordinate order one or more than one times until order will be finalized
+Table order_cordinates {
+  id int
+  order_id int
+  cordinator int // supporter_id that called client to cordinate
+  description text // details and result of conversation between client and supporter
+  finalized bool [default: false] // if order is finalized
+  // timestamps
+  created_at datetime
+  updated_at datetime
+  deleted_at datetime
+}
+
+// 
+
+Table order_statuses {
+  id int
+  title string // created, accepted, to_source, at_source, to_destination, at_destination, done,
+  description text
+  // timestamps
+  created_at datetime
+  updated_at datetime
+  deleted_at datetime
+}
+
+
+// **********************************************************//
+// relations
+
+Ref: "advanced_payments"."order_id" > "orders"."id"
+
+Ref: "advanced_payments"."registrant_id" > "staffs"."id"
+
+Ref: "addresses"."id" - "address_extras"."address_id"
+
+Ref: "addresses"."city_id" - "cities"."id"
+
+Ref: "addresses"."state_id" - "states"."id"
+
+Ref: "cars"."type_id" > "car_services"."id"
+
+Ref: "cars"."owner_id" > "persons"."id"
+Ref: "cars"."assigned_to" > "persons"."id" 
+
+Ref: "car_driver"."car_id" > "cars"."id"
+Ref: "car_driver"."driver_id" > "drivers"."id"
+
+Ref: "car_collector"."collector_id" > "staffs"."id"
+Ref: "car_collector"."car_id" > "cars"."id"
+
+Ref: "client_rate_details"."order_id" - "orders"."id"
+
+Ref: "client_rate_details"."commenter_driver_id"  > "drivers"."id"
+
+Ref: "driver_rate_details"."order_id" > "orders"."id"
+
+Ref: "driver_rate_details"."commented_driver_id" > "drivers"."id"
+
+Ref: "driver_request_money"."cashier_id" > "staffs"."id"
+Ref: "driver_request_money"."driver_id" > "drivers"."id"
+
+
+Ref: "clients"."person_id" - "persons"."id"  
+
+Ref: "clients"."introduction_method_id" > "introduction_methods"."id"
+
+Ref: "car_services"."image_id" < "images"."id"
+
+Ref: "car_service_order"."order_id" > "orders"."id"  
+
+Ref: "car_service_order"."car_service_id" > "car_services"."id"  
+
+Ref: "car_order"."order_id" > "orders"."id"  
+Ref: "car_order"."car_id" > "cars"."id"  
+
+Ref: "drivers"."type_id" > "driver_types"."id"
+
+Ref: "drivers"."license_type_id" > "license_types"."id"
+
+Ref: "financial_references"."id" < "transactions"."financial_reference_id"
+
+Ref: "orders"."client_id" > "clients"."id"
+
+Ref: "orders"."registerant_id" > "users"."id"
+
+Ref: "orders"."type_id" > "order_types"."id"
+
+Ref: "orders"."status_id" > "order_statuses"."id"
+
+Ref: "client_rate_details"."rate_number_id" > "rate_numbers"."id"
+Ref: "driver_rate_details"."rate_number_id" > "rate_numbers"."id"
+
+Ref: "orders"."source_address_id" - "addresses"."id"
+
+Ref: "orders"."destination_address_id" - "addresses"."id"
+
+Ref: "order_stop"."order_id" > "orders"."id"  
+Ref: "order_stop"."stop_middle_address_id" > "addresses"."id" 
+
+Ref: "order_worker_service"."order_id" > "orders"."id" 
+Ref: "order_worker_service"."worker_service_id" > "worker_services"."id"
+
+Ref: "order_worker"."order_id" > "orders"."id" 
+Ref: "order_worker"."worker_id" > "workers"."id"
+
+Ref: "order_priced_furniture"."order_id" > "orders"."id"
+Ref: "order_priced_furniture"."priced_furniture_id" > "priced_furnitures"."id"
+
+Ref: "order_product"."order_id" > "orders"."id"
+Ref: "order_product"."product_id" > "products"."id"
+
+Ref: "order_cordinates"."order_id" > "orders"."id"
+Ref: "order_cordinates"."cordinator" > "staffs"."id"
+
+Ref: "permissions"."id" < "permission_role"."permission_id"
+
+Ref: "permissions"."id" < "permission_user"."permission_id"
+
+Ref: "persons"."id" < "drivers"."person_id"
+// person can be different type as driver or worker
+Ref: "persons"."id" < "workers"."person_id" 
+
+Ref: "persons"."id" < "staffs"."person_id" 
+
+Ref: "persons"."id" < "financial_accounts"."person_id"
+
+Ref: "persons"."id" < "addresses"."person_id"
+
+Ref: "persons"."education_level" > "education_levels"."id"
+
+Ref: "persons"."image_id" < "images"."id"
+
+Ref: "products"."shop_id" > "shops"."id"
+
+Ref: "roles"."id" < "permission_role"."role_id"
+
+Ref: "staffs"."type_id" > "staff_types"."id"
+
+Ref: "transactions"."order_id" < "orders"."id"
+
+Ref: "users"."id" - "wallets"."user_id"
+
+Ref: "users"."person_id" > "persons"."id"
+
+Ref: "users"."type_id" > "user_types"."id" 
+
+Ref: "users"."id" < "permission_user"."user_id"
+
+Ref: "users"."role_id" > "roles"."id"
+
+Ref: "wallets"."id" < "transactions"."wallet_id" 
+
+Ref: "worker_houses"."address_id" - "addresses"."id"
+
+Ref: "worker_services"."id" < "workers"."type_id"
+
+Ref: "worker_services"."image_id" < "images"."id"
+
+Ref: "worker_worker_house"."worker_id" < "workers"."id"
+Ref: "worker_worker_house"."worker_house_id" < "worker_houses"."id"
+
+Ref: "transactions"."status" < "permissions"."updated_at"

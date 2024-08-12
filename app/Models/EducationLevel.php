@@ -9,4 +9,5 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class EducationLevel extends BaseModel
 {
     use HasFactory;
+    protected $fillable = [];
 }

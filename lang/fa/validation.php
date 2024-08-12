@@ -616,6 +616,11 @@ return [
         "state_id" => "استان",
         "city_id" => "شهر",
         "is_assignment" => "واگذاری است ؟",
-        "costCenter" => "مرکز هزینه"
+        "costCenter" => "مرکز هزینه" ,
+        "is_legal" => "حقوقی",
+        "mobile_phone" => "شماره تماس",
+        "birth_date" => "تاریخ تولد",
+        "father_name" => "نام پدر",
+        "education_level_id" => "شناسه سطح تحصیلات",
     ],
 ];

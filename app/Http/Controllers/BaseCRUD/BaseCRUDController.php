@@ -39,11 +39,15 @@ class BaseCRUDController extends BaseController
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request): JsonResponse {
+    public function index(Request $request) {
         return apiResponse(
             success:true,
             message:__("messages.index", ["attribute"=>$this->persianNamePlural]),
             data: $this->model::searchRecords($request->toArray())->addedQuery(),
+
+            // data: $this->model::searchRecords($request->toArray())->addedQuery(function ($query){
+            //     return $query->withTrashed();
+            // }),
             statusCode:200
         );
     }
@@ -68,7 +72,7 @@ class BaseCRUDController extends BaseController
     /**
      * Display the specified resource.
      */
-    public function show(Request $request, string $id): JsonResponse {
+    public function show(string $id): JsonResponse {
 
         return apiResponse(
             success:true,
@@ -102,6 +106,19 @@ class BaseCRUDController extends BaseController
     public function destroy(string $id): JsonResponse {
         // get instance that we want to delete
         $instance = $this->model::findOrFail($id);
+        $instance->delete();
+        return apiResponse(
+            message: __(
+                "messages.delete",
+                ["attribute" => $this->persianNameSingle,
+                'number' => $instance->id]
+            ));
+    }
+
+    public function forceDelete(string $id): JsonResponse {
+        // get instance that we want to delete
+        $instance = $this->model::withTrashed()->findOrFail($id);
+        $instance->forceDelete();
         return apiResponse(
             message: __(
                 "messages.delete",

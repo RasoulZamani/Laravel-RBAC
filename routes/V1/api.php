@@ -8,6 +8,7 @@ use App\Http\Controllers\Users\UserController;
 use App\Http\Controllers\Users\PersonController;
 
 Route::apiResource('/users', UserController::class);
+Route::delete('/users/force-delete', [UserController::class, 'forceDelete']);
 Route::apiResource('/roles', RoleController::class);
 Route::apiResource('/persons', PersonController::class);
 

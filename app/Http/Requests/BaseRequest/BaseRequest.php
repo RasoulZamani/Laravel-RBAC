@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\BaseRequest;
 
 use App\Traits\ResponseValidation;
 use Illuminate\Foundation\Http\FormRequest;
 
-class testREq extends FormRequest
-{   
+class BaseRequest extends FormRequest
+{
     use ResponseValidation;
     /**
      * Determine if the user is authorized to make this request.
@@ -24,7 +24,7 @@ class testREq extends FormRequest
     public function rules(): array
     {
         return [
-            "name" => ["required"],
+            //
         ];
     }
 }

@@ -11,6 +11,6 @@ class Role extends BaseModel
     use HasFactory;
 
     protected array $searchFields = [
-        "id", "title"
+        "id", "title", "description"
     ]; 
 }

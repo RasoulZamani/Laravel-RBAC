@@ -11,5 +11,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class BaseModel extends Model
 {
     use HasFactory, SoftDeletes, TimeModel, SearchRecords;
-    
+    protected $guarded=["created_at", "updated_at", "deleted_at"];
+
 }

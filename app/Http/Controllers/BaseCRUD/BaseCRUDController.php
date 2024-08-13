@@ -115,15 +115,15 @@ class BaseCRUDController extends BaseController
             ));
     }
 
-    public function forceDelete(string $id): JsonResponse {
-        // get instance that we want to delete
-        $instance = $this->model::withTrashed()->findOrFail($id);
-        $instance->forceDelete();
-        return apiResponse(
-            message: __(
-                "messages.delete",
-                ["attribute" => $this->persianNameSingle,
-                'number' => $instance->id]
-            ));
-    }
+    // public function forceDelete(string $id): JsonResponse {
+    //     // get instance that we want to delete
+    //     $instance = $this->model::withTrashed()->findOrFail($id);
+    //     $instance->forceDelete();
+    //     return apiResponse(
+    //         message: __(
+    //             "messages.delete",
+    //             ["attribute" => $this->persianNameSingle,
+    //             'number' => $instance->id]
+    //         ));
+    // }
 }

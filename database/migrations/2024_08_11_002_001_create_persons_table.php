@@ -23,7 +23,6 @@ return new class extends Migration
             $table->string('mobile_phone')->unique(); // Mobile phone, unique
             $table->string('email')->nullable(); // Email, can be nullable
             $table->dateTime('birth_date')->nullable(); // Birth date, can be nullable
-            $table->boolean('is_active')->default(true); // Boolean for active status, default true
             
             $table->unsignedBigInteger('education_level_id')->nullable(); // Foreign key for education level, nullable
             $table->foreign('education_level_id')->references('id')->on('education_levels'); 

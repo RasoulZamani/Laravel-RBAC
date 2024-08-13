@@ -22,11 +22,10 @@ class PersonCreateRequest extends BaseRequest
             'father_name' => ['required', 'string', 'max:255'],
             'gender' => ['required', 'string', 'in:male,female'],
             'is_legal' => ['boolean'],
-            'national_code' => ['required', 'numeric', 'unique:persons,national_code,NULL,id,deleted_at,NULL', new NationalCodeRule($this->is_legal)],
+            'national_code' => ['required', 'numeric', 'unique:persons,national_code'],//,NULL,id,deleted_at,NULL', new NationalCodeRule($this->is_legal)],
             'mobile_phone' => ['required', 'numeric', 'digits:11', 'regex:/^09\d{9}$/', 'unique:persons,mobile_phone'], 
             'email' => ['nullable', 'string', 'email', 'max:255'],
             'birth_date' => ['required', 'date'],
-            'is_active' => ['boolean'],
             'education_level_id' => ['nullable', 'exists:education_levels,id'],
             'image_id' => ['nullable', 'exists:images,id'],
         ];

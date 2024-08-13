@@ -1,10 +1,9 @@
-# Sedaghat Bar
+# RBAC in Laravel
 
-Backend for providing services related to furniture transformation.
-
+This is RBAC Api with Base Controller
 
 # Entity Relation Diagram
 You can see ERD of projects at database/ERD. it can be converted to diagram by dbdiagram.io.
 
-Safer
+
 R.Z

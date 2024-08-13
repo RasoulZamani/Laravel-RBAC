@@ -5,6 +5,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Users\AuthController;
 use App\Http\Controllers\Users\RoleController;
+use App\Http\Controllers\Users\UserController;
 use App\Http\Controllers\Users\PersonController;
 use App\Http\Controllers\Users\UserTypeController;
 use App\Http\Controllers\Users\EducationLevelController;
@@ -14,7 +15,7 @@ Route::post('/users/login', [AuthController::class, 'login'])->name('login');
 Route::post('/users/register', [AuthController::class, 'register'])->name('register');
 
 Route::group(["middleware"=>["auth:sanctum"] ], function() {
-    Route::apiResource('/users', AuthController::class);
+    Route::apiResource('/users', UserController::class);
     Route::post('/users/logout', [AuthController::class, 'logout'])->name('logout');
 
     Route::apiResource('/roles', RoleController::class);

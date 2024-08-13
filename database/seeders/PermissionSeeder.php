@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\Permission;
 use Illuminate\Database\Seeder;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use Carbon\Carbon;
 
 class PermissionSeeder extends Seeder
 {
@@ -13,61 +14,40 @@ class PermissionSeeder extends Seeder
      */
     public function run(): void
     {
-        // permissions for users table
-        Permission::create(["title" => "users:index"]);
-        Permission::create(["title" => "users:show"]);
-        Permission::create(["title" => "users:update"]);
-        Permission::create(["title" => "users:create"]);
-        Permission::create(["title" => "users:delete"]);
+        // create list of permissions for app
+
+        // list of tables
+        $tables = [
+            'user_types', 'users', 'persons','permissions','roles', 'education_levels', 'permission_role', 'permission_user',
+        ];
+        // list of actions
+        $actions = [
+            'index', 'show', 'update', 'create', 'delete', 'own:update', 'own:delete'
+        ];
+        $permissions = collect($tables)->crossJoin($actions)->map(function($pair){
+            return ["title" => "{$pair[0]}:{$pair[1]}" , "created_at" =>Carbon::now(), "updated_at" => Carbon::now()];
+        })->toArray();
+
+        // store list of permissions in db
+        Permission::insert($permissions);
+
+    //     // permissions for users table
+    //     Permission::create(["title" => "users:index"]);
+    //     Permission::create(["title" => "users:show"]);
+    //     Permission::create(["title" => "users:update"]);
+    //     Permission::create(["title" => "users:create"]);
+    //     Permission::create(["title" => "users:delete"]);
+    //     Permission::create(["title" => "users:own:update"]);
+    //     Permission::create(["title" => "users:own:delete"]);
         
-        // permissions for persons table
-        Permission::create(["title" => "persons:index"]);
-        Permission::create(["title" => "persons:show"]);
-        Permission::create(["title" => "persons:update"]);
-        Permission::create(["title" => "persons:create"]);
-        Permission::create(["title" => "persons:delete"]);
-
-        // permissions for permissions table
-        Permission::create(["title" => "permissions:index"]);
-        Permission::create(["title" => "permissions:show"]);
-        Permission::create(["title" => "permissions:update"]);
-        Permission::create(["title" => "permissions:create"]);
-        Permission::create(["title" => "permissions:delete"]);
-        
-        // permissions for roles table
-        Permission::create(["title" => "roles:index"]);
-        Permission::create(["title" => "roles:show"]);
-        Permission::create(["title" => "roles:update"]);
-        Permission::create(["title" => "roles:create"]);
-        Permission::create(["title" => "roles:delete"]);
-
-        // permissions for education_levels table
-        Permission::create(["title" => "education_levels:index"]);
-        Permission::create(["title" => "education_levels:show"]);
-        Permission::create(["title" => "education_levels:update"]);
-        Permission::create(["title" => "education_levels:create"]);
-        Permission::create(["title" => "education_levels:delete"]);
-
-        // permissions for user_types table
-        Permission::create(["title" => "user_types:index"]);
-        Permission::create(["title" => "user_types:show"]);
-        Permission::create(["title" => "user_types:update"]);
-        Permission::create(["title" => "user_types:create"]);
-        Permission::create(["title" => "user_types:delete"]);
-
-        // permissions for permission_user table
-        Permission::create(["title" => "permission_user:index"]);
-        Permission::create(["title" => "permission_user:show"]);
-        Permission::create(["title" => "permission_user:update"]);
-        Permission::create(["title" => "permission_user:create"]);
-        Permission::create(["title" => "permission_user:delete"]);
-
-        // permissions for permission_role table
-        Permission::create(["title" => "permission_role:index"]);
-        Permission::create(["title" => "permission_role:show"]);
-        Permission::create(["title" => "permission_role:update"]);
-        Permission::create(["title" => "permission_role:create"]);
-        Permission::create(["title" => "permission_role:delete"]);
+    //     // permissions for persons table
+    //     Permission::create(["title" => "persons:index"]);
+    //     Permission::create(["title" => "persons:show"]);
+    //     Permission::create(["title" => "persons:update"]);
+    //     Permission::create(["title" => "persons:create"]);
+    //     Permission::create(["title" => "persons:delete"]);
+    //     Permission::create(["title" => "persons:own:update"]);
+    //     Permission::create(["title" => "persons:own:delete"]);
 
     }
 }

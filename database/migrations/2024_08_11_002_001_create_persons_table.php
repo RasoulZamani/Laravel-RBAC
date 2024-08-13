@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('gender'); // Gender as a string
             $table->boolean('is_legal')->default(false); // Boolean for legal persons
             $table->string('national_code')->unique(); // National code, unique
-            $table->string('mobile_phone')->unique(); // Mobile phone, unique
+            $table->string('mobile_number')->unique(); // Mobile phone, unique
             $table->string('email')->nullable(); // Email, can be nullable
             $table->dateTime('birth_date')->nullable(); // Birth date, can be nullable
             

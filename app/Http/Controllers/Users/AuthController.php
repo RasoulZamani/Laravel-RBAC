@@ -10,6 +10,7 @@ use App\Models\EducationLevel;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
+use App\Http\Requests\Users\LoginRequest;
 use App\Http\Requests\Users\RegisterRequest;
 use App\Http\Requests\Users\UserCreateRequest;
 use App\Http\Requests\Users\UserUpdateRequest;
@@ -96,25 +97,65 @@ class AuthController extends Controller
                 'number' => $instance->id]
             ));
     }
-    // // login 
-    // public function login(ApiLoginRequest $request):JsonResponse {
-    //     $request->validated($request->all());
-
-    //     if (!Auth::attempt($request->only('phone','password'))) {
-    //         return $this->error($message="Invalid credentials", $statusCode=401);
-    //     }
-
-    //     $user = User::where('email',$request->email)->first();
-
-    //     return $this->ok($message="Authenticated", $data=[
-    //         'token' => $user->createToken(
-    //             'API token for' . $user->email,
-    //             Ability::getAbilities($user), 
-    //             now()->addMonth()
-    //             )->plainTextToken
-    //     ]);
+    // login 
+    public function login(LoginRequest $loginRequest):JsonResponse {
         
-    // }
+        // validation
+        $loginRequest->validated($loginRequest->all());
+        
+        // get person by mobile number
+        try {
+            $person = Person::where('mobile_number', $loginRequest->mobile_number)->firstOrFail();            
+        } catch(ModelNotFoundException $e) {   
+            return apiResponse(message: __(
+                "messages.invalid_credentials",
+            ), statusCode:401);
+        }
+        // get all users that related to this person
+        $relatedUsers = $person->users;
+        // if this person has no user info:
+        if ($relatedUsers->isEmpty()) {
+            return apiResponse(message: __(
+                "messages.invalid_credentials",
+            ), statusCode:401);
+        }
+        // check password for all related users to this person
+        $tokenCreatedForOneUser = false; 
+        foreach($relatedUsers as $relatedUser) {
+            if (Hash::check( $loginRequest->password, $relatedUser->password)) {
+                $token = $relatedUser->createToken(
+                    'API Token for' . $relatedUser->id,
+                    // Ability::getAbilities($user), 
+                    // now()->addMonth(),
+                )->plainTextToken;
+                $tokenCreatedForOneUser = true;
+            }
+        }
+        if (!$tokenCreatedForOneUser) {
+            return apiResponse(message: __(
+                "messages.invalid_credentials",
+            ), statusCode:401);
+        } else {
+            return apiResponse(
+                message: __("messages.login_token_created"),
+                data: [
+                    "token" => $token,
+                    "token_type" => "Bearer"
+                ]
+            );
+        }
+ 
+        // $user = User::where('email',$request->email)->first();
+
+        // return $this->ok($message="Authenticated", $data=[
+        //     'token' => $user->createToken(
+        //         'API token for' . $user->email,
+        //         Ability::getAbilities($user), 
+        //         now()->addMonth()
+        //         )->plainTextToken
+        // ]);
+        
+    }
     
     // Log out
     public function logout(Request $request) {
@@ -159,7 +200,7 @@ class AuthController extends Controller
             'gender' => $registerRequest->gender ,
             'is_legal' => $registerRequest->is_legal ,
             'national_code' => $registerRequest->national_code ,
-            'mobile_phone' => $registerRequest->mobile_phone,
+            'mobile_number' => $registerRequest->mobile_number,
             'email' => $registerRequest-> email,
             'birth_date' => $registerRequest->birth_date ,
             

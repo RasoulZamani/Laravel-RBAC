@@ -23,7 +23,7 @@ class registerRequest extends BaseRequest
             'gender' => ['required', 'string', 'in:male,female'],
             'is_legal' => ['boolean'],
             'national_code' => ['required', 'numeric', 'unique:persons,national_code'],//,NULL,id,deleted_at,NULL', new NationalCodeRule($this->is_legal)],
-            'mobile_phone' => ['required', 'numeric', 'digits:11', 'regex:/^09\d{9}$/', 'unique:persons,mobile_phone'], 
+            'mobile_number' => ['required', 'numeric', 'digits:11', 'regex:/^09\d{9}$/', 'unique:persons,mobile_number'], 
             'email' => ['nullable', 'string', 'email', 'max:255'],
             'birth_date' => ['required', 'date'],
             'education_level_id' => ['nullable', 'exists:education_levels,id'],

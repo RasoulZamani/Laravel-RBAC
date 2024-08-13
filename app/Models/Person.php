@@ -10,4 +10,9 @@ class Person extends BaseModel
 {
     use HasFactory;
     protected $table="persons";
+
+    //relation
+    public function users() {
+        return $this->hasMany(User::class,'person_id','id');
+    }
 }

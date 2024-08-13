@@ -23,7 +23,7 @@ class PersonUpdateRequest extends BaseRequest
             'gender' => ['nullable', 'string', 'in:male,female'],
             'is_legal' => ['boolean'],
             'national_code' => ['nullable', 'numeric', 'unique:persons,national_code,'],//.$this->person.',id,deleted_at,NULL', new NationalCodeRule($this->is_legal)],
-            'mobile_phone' => ['nullable', 'numeric', 'digits:11', 'regex:/^09\d{9}$/', 'unique:persons,mobile_phone'], 
+            'mobile_number' => ['nullable', 'numeric', 'digits:11', 'regex:/^09\d{9}$/', 'unique:persons,mobile_number'], 
             'email' => ['nullable', 'string', 'email', 'max:255'],
             'birth_date' => ['nullable', 'date'],
             'education_level_id' => ['nullable', 'exists:education_levels,id'],

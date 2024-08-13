@@ -25,7 +25,7 @@ class PersonFactory extends Factory
             // 'gender' => $this->faker->randomElement(['male', 'female']), // Random gender
             // 'is_legal' => $this->faker->boolean, // Random boolean for legal status
             // 'national_code' => $this->faker->unique()->numerify('##########'), // Unique national code
-            // 'mobile_phone' => $this->faker->unique()->phoneNumber, // Unique phone number
+            // 'mobile_number' => $this->faker->unique()->phoneNumber, // Unique phone number
             // 'email' => $this->faker->optional()->safeEmail, // Random email, can be null
             // 'birth_date' => $this->faker->optional()->dateTimeBetween('-60 years', '-18 years'), // Random birth date
             // 'education_level_id' =>null,// \App\Models\EducationLevel::factory(), // Random foreign key for education level

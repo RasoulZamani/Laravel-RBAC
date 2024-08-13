@@ -618,7 +618,7 @@ return [
         "is_assignment" => "واگذاری است ؟",
         "costCenter" => "مرکز هزینه" ,
         "is_legal" => "حقوقی",
-        "mobile_phone" => "شماره تماس",
+        "mobile_number" => "شماره تماس",
         "birth_date" => "تاریخ تولد",
         "father_name" => "نام پدر",
         "education_level_id" => "شناسه سطح تحصیلات",

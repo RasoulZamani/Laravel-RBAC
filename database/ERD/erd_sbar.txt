@@ -16,7 +16,7 @@ Table persons {
   is_legal bool // برای اشخاص حقوقی  
   national_code string unique // کد حقوقی بجای کد ملی برای اشخاص حقوقی
   image_id int
-  mobile_phone string unique
+  mobile_number string unique
   email email 
   birth_date datetime
   is_active bool

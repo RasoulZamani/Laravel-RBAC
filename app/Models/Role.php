@@ -20,12 +20,12 @@ class Role extends BaseModel
      * Relations
      */
     // role -< user
-    protected function users() {
+    public function users() {
         return $this->hasMany(User::class. 'role_id','id');
     }
 
     // role >-pivot (permission_role) -< permission
-    protected function permissions() {
+    public function permissions() {
         return $this->belongsToMany(Permission::class, 'permission_role');
     }
 }

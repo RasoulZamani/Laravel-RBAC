@@ -10,6 +10,7 @@ use Database\Seeders\UserSeeder;
 use Database\Seeders\PersonSeeder;
 use Database\Seeders\EducationLevel;
 use Database\Seeders\PermissionSeeder;
+use Database\Seeders\PermissionRoleSeeder;
 
 class DatabaseSeeder extends Seeder
 {
@@ -25,6 +26,7 @@ class DatabaseSeeder extends Seeder
             PermissionSeeder::class,
             PersonSeeder::class,
             UserSeeder::class,
+            PermissionRoleSeeder::class,
 
 
         ]);

@@ -17,12 +17,12 @@ class Permission extends BaseModel
      */
     
     // permission >-pivot (permission_role) -< role
-    protected function roles() {
+    public function roles() {
         return $this->belongsToMany(Role::class, 'permission_role');
     }
 
     // permission >-pivot (permission_user) -< user
-    protected function users() {
+    public function users() {
         return $this->belongsToMany(User::class, 'permission_user');
     }
 }

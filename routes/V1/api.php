@@ -15,9 +15,16 @@ Route::post('/users/login', [AuthController::class, 'login'])->name('login');
 Route::post('/users/register', [AuthController::class, 'register'])->name('register');
 
 Route::group(["middleware"=>["auth:sanctum"] ], function() {
-    Route::apiResource('/users', UserController::class);
     Route::post('/users/logout', [AuthController::class, 'logout'])->name('logout');
-
+    Route::post('/users/add-permissions', [UserController::class, 'addPermissionToUser'])->name('add_permission_to_user');
+    Route::get('/users/{user_id}/show-permissions', [UserController::class, 'permissionsOfUser'])->name('show_permissions_of_user');
+    Route::delete('/users/remove-permissions', [UserController::class, 'removePermissionOfUser'])->name('remove_permission_of_user');
+    
+    Route::get('/roles/{role_id}/show-permissions', [RoleController::class, 'permissionsOfRole'])->name('show_permissions_of_role');
+    Route::post('/roles/add-permissions', [RoleController::class, 'addPermissionToRole'])->name('add_permission_to_role');
+    Route::delete('/roles/remove-permissions', [RoleController::class, 'removePermissionOfRole'])->name('remove_permission_of_role');
+    
+    Route::apiResource('/users', UserController::class);
     Route::apiResource('/roles', RoleController::class);
     Route::apiResource('/persons', PersonController::class);
     Route::apiResource('/user_types', UserTypeController::class);

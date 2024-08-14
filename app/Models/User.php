@@ -48,16 +48,16 @@ class User extends Authenticatable
      * Relations of User
      */
     // user >- person
-    protected function person() {
+    public function person() {
         return $this->belongsTo(Person::class,'person_id', 'id');
     }
     // user >- role
-    protected function role() {
+    public function role() {
         return $this->belongsTo(Role::class, 'role_id', 'id');
     }
 
     // user >-pivot (permission_user) -< permission
-    protected function permissions() {
+    public function permissions() {
         return $this->belongsToMany(Permission::class, 'permission_user');
     }
 

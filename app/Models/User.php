@@ -3,7 +3,9 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Models\Role;
 use App\Models\Person;
+use App\Models\Permission;
 use App\Traits\SearchRecords;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Notifications\Notifiable;
@@ -42,8 +44,21 @@ class User extends Authenticatable
         'password' => 'hashed',
     ];
 
-    // relations
+    /**
+     * Relations of User
+     */
+    // user >- person
     protected function person() {
         return $this->belongsTo(Person::class,'person_id', 'id');
     }
+    // user >- role
+    protected function role() {
+        return $this->belongsTo(Role::class, 'role_id', 'id');
+    }
+
+    // user >-pivot (permission_user) -< permission
+    protected function permissions() {
+        return $this->belongsToMany(Permission::class, 'permission_user');
+    }
+
 }

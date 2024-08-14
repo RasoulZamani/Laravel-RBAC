@@ -20,6 +20,8 @@ return new class extends Migration
             $table->unsignedBigInteger('role_id')->nullable(); 
             $table->foreign('role_id')->references('id')->on('roles'); 
 
+            $table->unique(['permission_id','role_id']);
+            
             $table->timestamps();
             $table->softDeletes();
         });

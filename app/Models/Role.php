@@ -2,9 +2,11 @@
 
 namespace App\Models;
 
+use App\Models\User;
+use App\Models\Permission;
 use App\Models\BaseModel\BaseModel;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Role extends BaseModel
 {
@@ -13,4 +15,18 @@ class Role extends BaseModel
     protected array $searchFields = [
         "id", "title", "description"
     ]; 
+    
+    /**
+     * Relations
+     */
+    // role -< user
+    protected function users() {
+        return $this->hasMany(User::class. 'role_id','id');
+    }
+
+    // role >-pivot (permission_role) -< permission
+    protected function permissions() {
+        return $this->belongsToMany(Permission::class, 'permission_role');
+    }
 }
+

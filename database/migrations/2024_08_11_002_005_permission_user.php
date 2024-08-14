@@ -20,6 +20,8 @@ return new class extends Migration
             $table->unsignedBigInteger('user_id')->nullable(); 
             $table->foreign('user_id')->references('id')->on('users'); 
 
+            $table->unique(['permission_id','user_id']);
+
             $table->timestamps();
             $table->softDeletes();
         });

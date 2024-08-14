@@ -16,6 +16,7 @@ use App\Http\Requests\Users\RegisterRequest;
 use App\Http\Requests\Users\UserCreateRequest;
 use App\Http\Requests\Users\UserUpdateRequest;
 use App\Http\Requests\Users\AddOrRemovePermissionToUserRequest;
+use App\Http\Resources\UserResource;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class UserController extends Controller
@@ -108,10 +109,14 @@ class UserController extends Controller
      * Display a listing of the users.
      */
     public function index(Request $request) {
+        $users = User::searchRecords($request->toArray())->addedQuery();
+        $usersColl = UserResource::collection($users['data'] ?? $users);
+       
         return apiResponse(
             success:true,
             message:__("messages.index", ["attribute"=>"کاربران"]),
-            data: User::searchRecords($request->toArray())->addedQuery(),
+            data: $usersColl->resource,
+            // data: (User::searchRecords($request->toArray())->addedQuery()),
         );
     }
 
@@ -128,7 +133,7 @@ class UserController extends Controller
             message: __(
                 "messages.store" ,
                 ["attribute" => "کاربر"]),
-            data: $instance
+            data: new UserResource($instance)
         );
     }
 
@@ -136,11 +141,11 @@ class UserController extends Controller
      * Display the specified resource.
      */
     public function show(string $id): JsonResponse {
-
+        $instance = User::findOrFail($id);//->searchRecords($request->toArray())->addedQuery(),
         return apiResponse(
             success:true,
             message:__("messages.show", ["attribute"=> "کاربر" ]),
-            data: User::findOrFail($id),//->searchRecords($request->toArray())->addedQuery(),
+            data: new UserResource($instance)
         );
     }
 
@@ -159,7 +164,7 @@ class UserController extends Controller
             message: __(
                 "messages.update",
                 ["attribute"=> "کاربر" ]),
-            data: $instance
+            data: new UserResource($instance)
         );
     }
 

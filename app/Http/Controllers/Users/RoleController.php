@@ -8,6 +8,7 @@ use App\Http\Requests\Roles\RoleCreateRequest;
 use App\Http\Requests\Roles\RoleUpdateRequest;
 use App\Http\Controllers\BaseCRUD\BaseCRUDController;
 use App\Http\Requests\Users\AddOrRemovePermissionToRoleRequest;
+use App\Http\Resources\RoleResource;
 
 class RoleController extends BaseCRUDController
 {
@@ -18,14 +19,16 @@ class RoleController extends BaseCRUDController
         $persianNameSingle="نقش",
         $persianNamePlural="نقش ها",
         $updateRequest=RoleUpdateRequest::class,
-        $createRequest=RoleCreateRequest::class)
+        $createRequest=RoleCreateRequest::class,
+        $apiResource=RoleResource::class)
     {
         parent::__construct(
             model: $role,
             persianNameSingle:$persianNameSingle,
             persianNamePlural: $persianNamePlural,
             updateRequest: $updateRequest,
-            createRequest: $createRequest);
+            createRequest: $createRequest,
+            apiResource: $apiResource);
     }
 
    

@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers\BaseCRUD;
 
-use App\Http\Requests\BaseRequest\BaseRequest;
+use App\Models\Role;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use App\Models\BaseModel\BaseModel;
+use App\Http\Requests\BaseRequest\BaseRequest;
+use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
@@ -19,13 +22,16 @@ class BaseCRUDController extends BaseController
     protected $persianNamePlural; // persian name for plural instances
     protected $updateRequest;     // request form for validate input update request
     protected $createRequest;     // request form for validate input create request
+    protected $apiResource;       // api resource 
     
     protected function __construct(
         BaseModel $model,
         string $createRequest ,
         string $updateRequest ,
+        string $apiResource,
         string $persianNameSingle="آیتم",
-        string $persianNamePlural= "آیتم ها") 
+        string $persianNamePlural= "آیتم ها")
+        
     {
 
         $this->model = $model; 
@@ -33,6 +39,7 @@ class BaseCRUDController extends BaseController
         $this->persianNamePlural = $persianNamePlural;
         $this->createRequest = $createRequest;
         $this->updateRequest = $updateRequest;
+        $this->apiResource = $apiResource;
 
     }
 
@@ -40,10 +47,13 @@ class BaseCRUDController extends BaseController
      * Display a listing of the resource.
      */
     public function index(Request $request) {
+        $items = $this->model::searchRecords($request->toArray())->addedQuery();
+        $itemsResource = resolve($this->apiResource, ["resource"=>$items['data'] ?? $items]);//::collection($items['data'] ?? $items);
+       
         return apiResponse(
             success:true,
             message:__("messages.index", ["attribute"=>$this->persianNamePlural]),
-            data: $this->model::searchRecords($request->toArray())->addedQuery(),
+            data: $request->get('paginate') ? $itemsResource->resource : ["data" => $itemsResource->resource ],
 
             // data: $this->model::searchRecords($request->toArray())->addedQuery(function ($query){
             //     return $query->withTrashed();
@@ -61,11 +71,13 @@ class BaseCRUDController extends BaseController
         $validatedData = app($this->createRequest)->validated();
 
         $instance = $this->model->create($validatedData);
+        $instanceResource = resolve($this->apiResource, ["resource"=>$instance]);//::collection($items['data'] ?? $items);
+
         return apiResponse(
             message: __(
                 "messages.store" ,
                 ["attribute" => $this->persianNameSingle]),
-            data: $instance
+            data: $instanceResource 
         );
     }
 
@@ -73,11 +85,12 @@ class BaseCRUDController extends BaseController
      * Display the specified resource.
      */
     public function show(string $id): JsonResponse {
-
+        $instance = $this->model::findOrFail($id);//->searchRecords($request->toArray())->addedQuery(),
+        $instanceResource = resolve($this->apiResource, ["resource"=>$instance]);
         return apiResponse(
             success:true,
             message:__("messages.show", ["attribute"=>$this->persianNameSingle ]),
-            data: $this->model::findOrFail($id),//->searchRecords($request->toArray())->addedQuery(),
+            data: $instanceResource
         );
     }
 
@@ -92,11 +105,12 @@ class BaseCRUDController extends BaseController
         // get instance that we want to update
         $instance = $this->model::findOrFail($id);
         $instance->update($validatedData);
+        $instanceResource = resolve($this->apiResource, ["resource"=>$instance]);
         return apiResponse(
             message: __(
                 "messages.update",
                 ["attribute"=>$this->persianNameSingle ]),
-            data: $instance
+            data: $instanceResource
         );
     }
 

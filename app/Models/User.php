@@ -61,4 +61,9 @@ class User extends Authenticatable
         return $this->belongsToMany(Permission::class, 'permission_user');
     }
 
+    // // check user has specified permission
+    // public function hasPermission ($permission) {
+    //     return in_array($permission, $this->permissions);
+    // }
+
 }

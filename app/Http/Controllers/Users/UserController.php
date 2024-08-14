@@ -10,14 +10,15 @@ use Illuminate\Http\Request;
 use App\Models\EducationLevel;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\UserResource;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Requests\Users\LoginRequest;
 use App\Http\Requests\Users\RegisterRequest;
 use App\Http\Requests\Users\UserCreateRequest;
 use App\Http\Requests\Users\UserUpdateRequest;
-use App\Http\Requests\Users\AddOrRemovePermissionToUserRequest;
-use App\Http\Resources\UserResource;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use App\Http\Requests\Users\AddOrRemovePermissionToUserRequest;
 
 class UserController extends Controller
 {
@@ -109,6 +110,10 @@ class UserController extends Controller
      * Display a listing of the users.
      */
     public function index(Request $request) {
+        // dd( Auth::user()->permissions->pluck('title')->contains('users:viewAny'));
+        // check policy
+        $this->authorize('viewAny', User::class);
+
         $users = User::searchRecords($request->toArray())->addedQuery();
         $usersColl = UserResource::collection($users['data'] ?? $users);
        
@@ -141,7 +146,9 @@ class UserController extends Controller
      * Display the specified resource.
      */
     public function show(string $id): JsonResponse {
+       
         $instance = User::findOrFail($id);//->searchRecords($request->toArray())->addedQuery(),
+        $this->authorize('view', $instance);
         return apiResponse(
             success:true,
             message:__("messages.show", ["attribute"=> "کاربر" ]),

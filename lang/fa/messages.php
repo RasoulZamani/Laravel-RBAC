@@ -24,6 +24,7 @@ return [
    "dont_have_permission" => "شما دسترسی ندارید",
    "success_log_out" => "با موفقیت خارج شدید",
    "authentication_exception" => "لطفا وارد شوید",
+   "non_authorized"=>"شما سطح دسترسی لازم برای انجام این عملیات را ندارید",
    "invalid_credentials" => "اطلاعات وارد شده برای ورود به برنامه معتبر نیست",
    "not_FoundHttp_exception" => "با مقادیر ورودی چیزی یافت نشد",
    "attach_users_to_panel" => "کاربر یا کاربران با موفقیت به پنل اضافه شده اند",

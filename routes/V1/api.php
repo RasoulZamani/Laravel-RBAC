@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Users\AuthController;
 use App\Http\Controllers\Users\RoleController;
 use App\Http\Controllers\Users\UserController;
+use App\Http\Controllers\Users\UserController2;
 use App\Http\Controllers\Users\PersonController;
 use App\Http\Controllers\Users\UserTypeController;
 use App\Http\Controllers\Users\EducationLevelController;
@@ -25,6 +26,9 @@ Route::group(["middleware"=>["auth:sanctum"] ], function() {
     Route::delete('/roles/remove-permissions', [RoleController::class, 'removePermissionOfRole'])->name('remove_permission_of_role');
     
     Route::apiResource('/users', UserController::class);
+    Route::apiResource('/users2', UserController2::class);
+
+
     Route::apiResource('/roles', RoleController::class);
     Route::apiResource('/persons', PersonController::class);
     Route::apiResource('/user_types', UserTypeController::class);

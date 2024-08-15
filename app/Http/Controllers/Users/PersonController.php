@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests\Persons\PersonUpdateRequest;
 use App\Http\Controllers\BaseCRUD\BaseCRUDController;
 use App\Http\Requests\Persons\PersonCreateRequest;
+use App\Http\Resources\PersonResource;
 
 class PersonController extends BaseCRUDController
 {
@@ -16,14 +17,16 @@ class PersonController extends BaseCRUDController
         $persianNameSingle="فرد",
         $persianNamePlural="افراد",
         $updateRequest=PersonUpdateRequest::class,
-        $createRequest=PersonCreateRequest::class)
+        $createRequest=PersonCreateRequest::class,
+        $apiResource= PersonResource::class)
     {
         parent::__construct(
             model: $person,
             persianNameSingle:$persianNameSingle,
             persianNamePlural: $persianNamePlural,
             updateRequest: $updateRequest,
-            createRequest: $createRequest);
+            createRequest: $createRequest,
+            apiResource: $apiResource);
     }
 
 

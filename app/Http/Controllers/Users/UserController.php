@@ -6,6 +6,7 @@ use App\Models\Role;
 use App\Models\User;
 use App\Models\Image;
 use App\Models\Person;
+use App\Models\Permission;
 use Illuminate\Http\Request;
 use App\Models\EducationLevel;
 use Illuminate\Http\JsonResponse;
@@ -111,7 +112,12 @@ class UserController extends Controller
      */
     public function index(Request $request) {
         // dd( Auth::user()->permissions->pluck('title')->contains('users:viewAny'));
+        
         // check policy
+        //permissions
+        // if (!Auth::user()->can('viewAny',User::class)) {
+        //     return apiResponse(message:__("messages.non_authorized"), statusCode:403);
+        // }
         $this->authorize('viewAny', User::class);
 
         $users = User::searchRecords($request->toArray())->addedQuery();
@@ -130,6 +136,9 @@ class UserController extends Controller
      */
     public function store(UserCreateRequest $requestCreate)
     {
+        // check policy
+        $this->authorize('create', User::class);
+
         //validation
         $validatedData = $requestCreate->validated();
 
@@ -148,7 +157,10 @@ class UserController extends Controller
     public function show(string $id): JsonResponse {
        
         $instance = User::findOrFail($id);//->searchRecords($request->toArray())->addedQuery(),
+        
+        // check policy
         $this->authorize('view', $instance);
+        
         return apiResponse(
             success:true,
             message:__("messages.show", ["attribute"=> "کاربر" ]),
@@ -166,6 +178,10 @@ class UserController extends Controller
 
         // get instance that we want to update
         $instance = User::findOrFail($id);
+        
+        // check policy
+        $this->authorize('update', $instance);
+
         $instance->update($validatedData);
         return apiResponse(
             message: __(
@@ -181,6 +197,10 @@ class UserController extends Controller
     public function destroy(string $id): JsonResponse {
         // get instance that we want to delete
         $instance = User::findOrFail($id);
+        
+        // check policy
+        $this->authorize('delete', $instance);
+        
         $instance->delete();
         return apiResponse(
             message: __(

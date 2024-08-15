@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use App\Models\BaseModel\BaseModel;
+use Illuminate\Support\Facades\Auth;
 use App\Http\Requests\BaseRequest\BaseRequest;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Routing\Controller as BaseController;
@@ -47,6 +48,11 @@ class BaseCRUDController extends BaseController
      * Display a listing of the resource.
      */
     public function index(Request $request) {
+        // permissions
+        //$this->model->authorize('viewAny',Auth::user());
+        if (!Auth::user()->can('viewAny',$this->model::class)) {
+            return apiResponse(message:__("messages.non_authorized"), statusCode:403);
+        }
         $items = $this->model::searchRecords($request->toArray())->addedQuery();
         $itemsResource = resolve($this->apiResource, ["resource"=>$items['data'] ?? $items]);//::collection($items['data'] ?? $items);
        
@@ -66,11 +72,17 @@ class BaseCRUDController extends BaseController
      * Store a newly created resource in storage.
      */
     public function store()
-    {
+    {   
+        // permissions
+        if (!Auth::user()->can('create',$this->model::class)) {
+            return apiResponse(message:__("messages.non_authorized"), statusCode:403);
+        }
+        
         //validation
         $validatedData = app($this->createRequest)->validated();
 
         $instance = $this->model->create($validatedData);
+        
         $instanceResource = resolve($this->apiResource, ["resource"=>$instance]);//::collection($items['data'] ?? $items);
 
         return apiResponse(
@@ -85,7 +97,12 @@ class BaseCRUDController extends BaseController
      * Display the specified resource.
      */
     public function show(string $id): JsonResponse {
+        
         $instance = $this->model::findOrFail($id);//->searchRecords($request->toArray())->addedQuery(),
+        //permissions
+        if (!Auth::user()->can('view', $instance)) {
+            return apiResponse(message:__("messages.non_authorized"), statusCode:403);
+        }
         $instanceResource = resolve($this->apiResource, ["resource"=>$instance]);
         return apiResponse(
             success:true,
@@ -104,6 +121,12 @@ class BaseCRUDController extends BaseController
 
         // get instance that we want to update
         $instance = $this->model::findOrFail($id);
+        
+        //permissions
+        if (!Auth::user()->can('update',$instance)) {
+            return apiResponse(message:__("messages.non_authorized"), statusCode:403);
+        }
+        
         $instance->update($validatedData);
         $instanceResource = resolve($this->apiResource, ["resource"=>$instance]);
         return apiResponse(
@@ -120,6 +143,10 @@ class BaseCRUDController extends BaseController
     public function destroy(string $id): JsonResponse {
         // get instance that we want to delete
         $instance = $this->model::findOrFail($id);
+        //permissions
+        if (!Auth::user()->can('delete',$instance)) {
+            return apiResponse(message:__("messages.non_authorized"), statusCode:403);
+        }
         $instance->delete();
         return apiResponse(
             message: __(

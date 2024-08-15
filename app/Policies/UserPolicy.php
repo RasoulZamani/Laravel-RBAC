@@ -31,7 +31,7 @@ class UserPolicy
      */
     public function create(User $user)
     {
-        return in_array('users:create', $user->permissions->toArray());
+        return in_array('users:create', $user->permissions->pluck('title')->toArray());
     }
 
     /**
@@ -39,8 +39,8 @@ class UserPolicy
      */
     public function update(User $user, User $userNoticed)
     {
-        return in_array('users:update', $user->permissions->toArray()) ||
-               (in_array('users:own:update', $user->permissions->toArray()) && $this->isOwner($user, $userNoticed));
+        return in_array('users:update', $user->permissions->pluck('title')->toArray()) ||
+               (in_array('users:own:update', $user->permissions->pluck('title')->toArray()) && $this->isOwner($user, $userNoticed));
     }
 
     /**
@@ -48,8 +48,8 @@ class UserPolicy
      */
     public function delete(User $user, User $userNoticed)
     {
-        return in_array('users:delete', $user->permissions->toArray()) ||
-               (in_array('users:own:delete', $user->permissions->toArray()) && $this->isOwner($user, $userNoticed));
+        return in_array('users:delete', $user->permissions->pluck('title')->toArray()) ||
+               (in_array('users:own:delete', $user->permissions->pluck('title')->toArray()) && $this->isOwner($user, $userNoticed));
     }
 
     /**
@@ -58,5 +58,17 @@ class UserPolicy
     protected function isOwner(User $user, User $userNoticed)
     {   
         return $user->id === $userNoticed->id;
+    }
+
+    /**
+     * Determine if the user can add permissions to user
+     */
+    protected function addPermissionToUser(User $user){
+        return in_array('permission_user:create', $user->permissions->pluck('title')->toArray());
+
+    }
+    protected function addPermissionToRole(User $user){
+        return in_array('permission_role:create', $user->permissions->pluck('title')->toArray());
+
     }
 }

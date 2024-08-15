@@ -22,7 +22,7 @@ class PermissionSeeder extends Seeder
         ];
         // list of actions
         $actions = [
-            'viewAny', 'view', 'update', 'create', 'delete','own:view', 'own:update', 'own:delete'
+            'viewAny', 'view', 'update', 'create', 'delete','own:view', 'own:update', 'own:delete', 
         ];
         $permissions = collect($tables)->crossJoin($actions)->map(function($pair){
             return ["title" => "{$pair[0]}:{$pair[1]}" , "created_at" =>Carbon::now(), "updated_at" => Carbon::now()];

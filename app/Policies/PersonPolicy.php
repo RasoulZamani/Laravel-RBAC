@@ -12,7 +12,7 @@ class PersonPolicy
      */
     public function viewAny(User $user)
     {
-        return in_array('persons:viewAny', $user->permissions);
+        return in_array('persons:viewAny', $user->permissions->pluck('title')->toArray());
     }
 
     /**
@@ -20,8 +20,9 @@ class PersonPolicy
      */
     public function view(User $user, Person $person)
     {
-        return in_array('persons:view', $user->permissions) ||
-               (in_array('persons:own:view', $user->permissions) && $this->isOwner($user, $person));
+        //return $this->isOwner($user, $person);
+        return in_array('persons:view', $user->permissions->pluck('title')->toArray()) ||
+               (in_array('persons:own:view', $user->permissions->pluck('title')->toArray()) && $this->isOwner($user, $person));
     }
 
     /**
@@ -29,7 +30,7 @@ class PersonPolicy
      */
     public function create(User $user)
     {
-        return in_array('persons:create', $user->permissions);
+        return in_array('persons:create', $user->permissions->pluck('title')->toArray());
     }
 
     /**
@@ -37,8 +38,8 @@ class PersonPolicy
      */
     public function update(User $user, Person $person)
     {
-        return in_array('persons:update', $user->permissions) ||
-               (in_array('persons:own:update', $user->permissions) && $this->isOwner($user, $person));
+        return in_array('persons:update', $user->permissions->pluck('title')->toArray()) ||
+               (in_array('persons:own:update', $user->permissions->pluck('title')->toArray()) && $this->isOwner($user, $person));
     }
 
     /**
@@ -46,8 +47,8 @@ class PersonPolicy
      */
     public function delete(User $user, Person $person)
     {
-        return in_array('persons:delete', $user->permissions) ||
-               (in_array('persons:own:delete', $user->permissions) && $this->isOwner($user, $person));
+        return in_array('persons:delete', $user->permissions->pluck('title')->toArray()) ||
+               (in_array('persons:own:delete', $user->permissions->pluck('title')->toArray()) && $this->isOwner($user, $person));
     }
 
     /**
@@ -55,6 +56,6 @@ class PersonPolicy
      */
     protected function isOwner(User $user, Person $person)
     {   
-        return (in_array($user->id, $person->users->id ));
+        return (in_array($user->id, $person->users->pluck('id')->toArray() ));
     }
 }

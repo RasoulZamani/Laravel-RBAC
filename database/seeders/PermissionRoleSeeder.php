@@ -16,6 +16,7 @@ class PermissionRoleSeeder extends Seeder
      */
     public function run(): void
     {
+        // Admin Role *************************************
         // fetch admin role
         $adminRole = Role::where('title','admin')->first();
 
@@ -23,12 +24,26 @@ class PermissionRoleSeeder extends Seeder
         $allPermissionIds = Permission::select('id')->get();
 
         // grant all permissions to admin role
-        //foreach($allPermissionIds as $permissionId) {
         $adminRole->permissions()->attach($allPermissionIds);
 
-        // store list of permission_role for admin in db
-        // DB::table('permission_role')->insert();
+        //  Usual User Role *********************************
+        // fetch user role
+        $userRole = Role::where('title','User')->first();
 
+        // permissions for usual user
+        
+        $userPermissions = [
+            //'user_types:viewAny','user_types:view', 
+            'persons:own:view','persons:own:delete','persons:own:update',
+            'users:own:view','users:own:delete','users:own:update'
+        ];
+        // $userPermissionIds = [] ;
+        // foreach($userPermissions as $userPerm) {
+        //     $userPermissions[] = Permission::where('title',$userPerm)->select('id')->first()->id;
+        // }
+        $userPermissionIds = Permission::whereIn('title', $userPermissions)->pluck('id')->toArray();
+        // grant all permissions to admin role
+        $userRole->permissions()->attach($userPermissionIds);
 
     }
 }

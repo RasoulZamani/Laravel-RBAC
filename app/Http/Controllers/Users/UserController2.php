@@ -19,7 +19,7 @@ use App\Http\Requests\Users\RegisterRequest;
 use App\Http\Requests\Users\UserCreateRequest;
 use App\Http\Requests\Users\UserUpdateRequest;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use App\Repository\User\UserRepositoryInterface;
+use App\Repositories\User\UserRepositoryInterface;
 use App\Http\Requests\Users\AddOrRemovePermissionToUserRequest;
 
 class UserController2 extends Controller

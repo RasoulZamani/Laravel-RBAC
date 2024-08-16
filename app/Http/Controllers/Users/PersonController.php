@@ -20,7 +20,7 @@ class PersonController extends BaseCRUDController
         $persianNamePlural="افراد",
         $updateRequest=PersonUpdateRequest::class,
         $createRequest=PersonCreateRequest::class,
-        $apiResource= PersonResource::class)
+        $apiResource=PersonResource::class)
     {
         parent::__construct(
             model: $person,

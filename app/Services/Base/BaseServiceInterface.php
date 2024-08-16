@@ -1,9 +1,8 @@
 <?php
 
-namespace App\Repositories\Base;
+namespace App\Services\Base;
 
-
-interface BaseRepositoryInterface
+interface BaseServiceInterface
 {
     public function findAll();
 
@@ -14,5 +13,4 @@ interface BaseRepositoryInterface
     public function update(string $id, array $attributes);
 
     public function delete(string $id);
-
 }

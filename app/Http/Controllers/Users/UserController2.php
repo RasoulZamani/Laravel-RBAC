@@ -15,20 +15,22 @@ use App\Http\Resources\UserResource;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Requests\Users\LoginRequest;
+use App\Services\User\UserServiceInterface;
 use App\Http\Requests\Users\RegisterRequest;
 use App\Http\Requests\Users\UserCreateRequest;
 use App\Http\Requests\Users\UserUpdateRequest;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Repositories\User\UserRepositoryInterface;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Http\Requests\Users\AddOrRemovePermissionToUserRequest;
 
 class UserController2 extends Controller
 {
 
-    private $userRepository;
+    protected $userService;
 
-    public function __construct(UserRepositoryInterface $userRepository) {
-        $this->userRepository = $userRepository;
+    public function __construct(UserServiceInterface $userService)
+    {
+        $this->userService = $userService;
     }
     
 
@@ -122,7 +124,7 @@ class UserController2 extends Controller
     public function index(Request $request) {
         // check permissions
         $this->authorize('viewAny', User::class);
-        $users = $this->userRepository->findAll();
+        $users = $this->userService->findAll();
         //$users = User::searchRecords($request->toArray())->addedQuery();
         $usersColl = UserResource::collection($users['data'] ?? $users); // ?? $user is for paginations
        

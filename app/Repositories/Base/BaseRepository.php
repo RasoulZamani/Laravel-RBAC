@@ -2,9 +2,8 @@
 
 namespace App\Repositories\Base;
 
-use Illuminate\Support\Collection;
 use Illuminate\Database\Eloquent\Model;
-// use App\Repository\Base\BaseRepositoryInterface;
+
 
 class BaseRepository implements BaseRepositoryInterface {
 
@@ -18,13 +17,13 @@ class BaseRepository implements BaseRepositoryInterface {
         return $this->model->all();
     }
 
-    public function create(array $data) {
-        return $this->model->create($data);
+    public function create(array $attributes) {
+        return $this->model->create($attributes);
     }
 
-    public function update(string $id, array $data) {
+    public function update(string $id, array $attributes) {
         $instance = $this->model->findOrFail($id);
-        $instance->update($data);
+        $instance->update($attributes);
         return $instance;
     }
 

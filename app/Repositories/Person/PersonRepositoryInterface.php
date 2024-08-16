@@ -6,6 +6,6 @@ use App\Repositories\Base\BaseRepositoryInterface;
 
 interface PersonRepositoryInterface extends BaseRepositoryInterface  {
     
-   // extra methods for users
+   public function findByMobile(string $mobile);
    
 }

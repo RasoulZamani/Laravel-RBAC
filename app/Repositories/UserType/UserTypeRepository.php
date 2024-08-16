@@ -10,4 +10,10 @@ class UserTypeRepository extends BaseRepository implements UserTypeRepositoryInt
     public function __construct(UserType $model) {
         parent::__construct($model);
     }
+    /**
+     * Find a UserType by its title
+     */
+    public function findUserTypeByTitle(string $title) {
+        return $this->model->where('title', $title)->first();
+    }
 }

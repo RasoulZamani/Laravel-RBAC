@@ -11,4 +11,10 @@ class RoleRepository extends BaseRepository implements RoleRepositoryInterface {
         parent::__construct($model);
     }
 
+    /**
+     * Find a Role by its title
+     */
+    public function findRoleByTitle(string $title) {
+        return $this->model->where('title', $title)->first();
+    }
 }

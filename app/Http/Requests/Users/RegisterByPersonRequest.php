@@ -4,7 +4,7 @@ namespace App\Http\Requests\Users;
 
 use App\Http\Requests\BaseRequest\BaseRequest;
 
-class LoginRequest extends BaseRequest
+class RegisterByPersonRequest extends BaseRequest
 {
 
     /**
@@ -15,10 +15,7 @@ class LoginRequest extends BaseRequest
     public function rules(): array
     {
         return [
-            // related to person table
-            'mobile_number' => ['required', 'numeric', 'digits:11', 'regex:/^09\d{9}$/'], 
-            
-            // related to user table
+            'username' => ['required', 'string', 'max:255'],
             'password' => [
                 'required',
                 'string',
@@ -28,7 +25,11 @@ class LoginRequest extends BaseRequest
                 'regex:/[0-9]/',      // must contain at least one digit
                 //'regex:/[@$!%*#?&]/', // must contain a special character
             ],
-           
+            'is_active' => ['boolean'],
+            'user_type_id' => ['nullable', 'exists:user_types,id'],
+            //'person_id' => ['required', 'exists:persons,id'], -> will get by url
+            // 'role_id' => ['required', 'exists:roles,id'], // will fill with general User role
+
         ];
     }
 }

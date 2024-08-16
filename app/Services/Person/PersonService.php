@@ -12,5 +12,9 @@ class PersonService extends BaseService implements PersonServiceInterface
     {
         parent::__construct($repository);
     }
+    public function findByMobile(string $mobile){
+        return $this->repository->findByMobile($mobile);
+    }
+
     
 }

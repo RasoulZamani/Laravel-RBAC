@@ -12,6 +12,12 @@ class RoleService extends BaseService implements RoleServiceInterface
     {
         parent::__construct($repository);
     }
+    /**
+     * Find a Role by its title
+     */
+    public function findByTitle(string $title) {
+        return $this->repository->findRoleByTitle($title);
+    }
 
     /******************************************************************
     * Get all permissions assigned to a role

@@ -41,7 +41,7 @@ class RegisterUserRequest extends BaseRequest
                 //'regex:/[@$!%*#?&]/', // must contain a special character
             ],
             'is_active' => ['boolean'],
-            'user_type_id' => ['required', 'exists:user_types,id'],
+            'user_type_id' => ['nullable', 'exists:user_types,id'],
             // 'person_id' => ['required', 'exists:persons,id'],
             // 'role_id' => ['required', 'exists:roles,id'], 
 

@@ -13,10 +13,6 @@ class UserService extends BaseService implements UserServiceInterface
         parent::__construct($repository);
     }
     
-    public function login() {
-        
-    }
-
      /******************************************************************
     * Get all permissions assigned to a user
     */

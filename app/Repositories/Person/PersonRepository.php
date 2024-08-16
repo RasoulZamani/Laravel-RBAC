@@ -10,5 +10,7 @@ class PersonRepository extends BaseRepository implements PersonRepositoryInterfa
     public function __construct(Person $model) {
         parent::__construct($model);
     }
-
+    public function findByMobile(string $mobile){
+       return $this->model->where('mobile_number', $mobile)->first();
+    }
 }

@@ -6,6 +6,6 @@ use App\Repositories\Base\BaseRepositoryInterface;
 
 interface RoleRepositoryInterface extends BaseRepositoryInterface  {
     
-   // extra methods for users
+   public function findRoleByTitle(string $title);
    
 }

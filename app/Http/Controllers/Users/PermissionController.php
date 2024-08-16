@@ -38,6 +38,8 @@ class PermissionController extends BaseCRUDController
             createRequest: $createRequest,
             apiResource: $apiResource);
     }
-
+  // permission_user is controlled in UserController
+  // permission_role is controlled in RoleController
+ 
 }
 

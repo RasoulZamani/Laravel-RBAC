@@ -9,6 +9,7 @@ use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\UserResource;
 
+use App\Http\Resources\PermissionResource;
 use App\Services\User\UserServiceInterface;
 use App\Http\Requests\Users\UserCreateRequest;
 use App\Http\Requests\Users\UserUpdateRequest;
@@ -25,7 +26,7 @@ class UserController extends Controller
     }
     
 
-    /**
+    /****************************************************************
     * Display a listing of the users.
     */
     public function index(Request $request) {
@@ -45,7 +46,7 @@ class UserController extends Controller
         );
     }
 
-    /**
+    /****************************************************************
      * Store a newly created resource in storage.
      */
     public function store(UserCreateRequest $requestCreate)
@@ -67,7 +68,7 @@ class UserController extends Controller
         );
     }
 
-    /**
+    /****************************************************************
      * Display the specified resource.
      */
     public function show(string $id): JsonResponse { 
@@ -85,7 +86,7 @@ class UserController extends Controller
     }
 
 
-    /**
+    /****************************************************************
      * Update the specified resource in storage.
      */
     public function update(UserUpdateRequest $requestUpdate,string $id) {
@@ -108,7 +109,7 @@ class UserController extends Controller
         );
     }
 
-    /**
+    /****************************************************************
      * Remove the specified resource from storage.
      */
     public function destroy(string $id): JsonResponse {
@@ -130,88 +131,41 @@ class UserController extends Controller
             ));
     }
 
-    /**
+    /****************************************************************
+    * Get all permissions assigned to a user
+    */
+    public function permissionsOfUser(string $user_id) {
+        $userPermissions = $this->userService->getPermissions($user_id);
+        $userPermissionsCollection = PermissionResource::collection($userPermissions);
+        return apiResponse(
+            message: __("messages.index", ["attribute"=> " دسترسی های کاربر"]),
+            data: $userPermissionsCollection,
+        );
+    }
+
+    /****************************************************************
      * Assign permission to a user based on its role
      */
     public function addPermissionToUser(AddOrRemovePermissionToUserRequest $addPermissionToUserRequest) {
         // validation
         $validatedData = $addPermissionToUserRequest->validated();
 
-        //fetch user with this user_id and load its role
-        $user = User::with('role')->findOrFail($validatedData['user_id']);
-
-        // fetch available permission for user's role
-        $availablePermissions = $user->role->permissions;
-
-        // fetch existing permissions for this user
-        $existingPermissions = $user->permissions;
-        // dd($existingPermissions[2]->id); 
-        // check if permissions are exists in user role and already not exist
-        foreach($validatedData['permission_ids'] as $permissionId) {
-            if (!$availablePermissions->contains($permissionId)) {
-                return apiResponse(
-                    message: __("messages.permission_not_available_for_this_role"),
-                    data: ["not_allowed_permission_id" => $permissionId],
-                    statusCode:400,
-                );
-            }
-            // check that these permission is already assigned
-            if ($existingPermissions->contains($permissionId)) {
-                return apiResponse(
-                    message: __("messages.permission_is_already_exists_for_this_user"),
-                    data: ["permission_already_exists_id" => $permissionId],
-                    statusCode:400,
-                );
-            }
-        }
-        // add permissions to user
-        $user->permissions()->attach($validatedData['permission_ids']);
-        return apiResponse(
-            message: __("messages.attach_permissions_to_user"),
-            //data: ["user_id" => $user->id, "assigned_permissions"=>[$user->permissions]],
-        );
-   }
-
-   /**
-    * Get permissions assigned to user
-    */
-    public function permissionsOfUser(string $user_id) {
-        // fetch user by user_id
-        $user = User::findOrFail($user_id);
-        return apiResponse(
-            message: __("messages.index", ["attribute"=> "دسترسی های کاربر"]),
-            data:[ $user->permissions],
+        return $this->userService->addPermission(
+            $validatedData['user_id'],
+            $validatedData['permission_ids'],
         );
     }
 
-    /**
+    /****************************************************************
      * Remove Permissions of a user
      */
     public function removePermissionOfUser(AddOrRemovePermissionToUserRequest $removePermissionsOfUser) {
         // validation
         $validatedData = $removePermissionsOfUser->validated();
 
-        //fetch role with this role_id and load its role
-        $user = User::with('permissions')->findOrFail($validatedData['user_id']);
-        
-        // fetch existing permissions for this user
-        $existingPermissions = $user->permissions;
-        // dd($existingPermissions); 
-        // check if permissions is exist  (if not exist we can not delete it)
-        foreach($validatedData['permission_ids'] as $permissionId) {
-            if (!$existingPermissions->contains($permissionId)) {
-                return apiResponse(
-                    message: __("messages.permission_is_not_exists_for_this_user"),
-                    data: ["permission_not_exists_id" => $permissionId],
-                    statusCode:400,
-                );
-            }
-        }
-        // remove permissions of user
-        $user->permissions()->detach($validatedData['permission_ids']);
-        return apiResponse(
-            message: __("messages.detach_permissions_to_user"),
-        );    
+        return $this->userService->removePermission(
+            $validatedData['user_id'],
+            $validatedData['permission_ids'],
+        );
     }
-
 }

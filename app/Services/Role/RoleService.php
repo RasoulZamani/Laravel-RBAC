@@ -17,7 +17,7 @@ class RoleService extends BaseService implements RoleServiceInterface
     * Get all permissions assigned to a role
     */
     public function getPermissions(string $role_id) {
-        // fetch role by role_if
+        // fetch role by role_id
         $role = $this->repository->find($role_id);
         $permissions = $role->permissions;
         return $permissions;
@@ -68,6 +68,7 @@ class RoleService extends BaseService implements RoleServiceInterface
         foreach($permissionIds as $permissionId) {
             if (!$rolePermissions->contains($permissionId)) {
                 return apiResponse(
+                    success:false,
                     message: __("messages.permission_is_not_exists_for_this_role"),
                     data: ["permission_not_exists_id" => $permissionId],
                     statusCode:400,

@@ -2,27 +2,134 @@
 
 namespace App\Http\Controllers\Users;
 
-use App\Models\Role;
 use App\Models\User;
-use App\Models\Image;
-use App\Models\Person;
-use App\Models\Permission;
+
 use Illuminate\Http\Request;
-use App\Models\EducationLevel;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\UserResource;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
-use App\Http\Requests\Users\LoginRequest;
-use App\Http\Requests\Users\RegisterRequest;
+
+use App\Services\User\UserServiceInterface;
 use App\Http\Requests\Users\UserCreateRequest;
 use App\Http\Requests\Users\UserUpdateRequest;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Http\Requests\Users\AddOrRemovePermissionToUserRequest;
 
 class UserController extends Controller
 {
+
+    protected $userService;
+
+    public function __construct(UserServiceInterface $userService)
+    {
+        $this->userService = $userService;
+    }
+    
+
+    /**
+    * Display a listing of the users.
+    */
+    public function index(Request $request) {
+        // check permissions
+        $this->authorize('viewAny', User::class);
+        
+        // get data from user service
+        $users = $this->userService->findAll();
+        //$users = User::searchRecords($request->toArray())->addedQuery();
+        
+        $usersCollection = UserResource::collection($users['data'] ?? $users); // ?? $user is for pagination by searchOrder 
+       
+        return apiResponse(
+            success:true,
+            message:__("messages.index", ["attribute"=>"کاربران"]),
+            data: $usersCollection->resource,
+        );
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(UserCreateRequest $requestCreate)
+    {
+        // check perm
+        $this->authorize('create', User::class);
+
+        //validation
+        $validatedData = $requestCreate->validated();
+
+        // create user 
+        $instance = $this->userService->create($validatedData);
+        
+        return apiResponse(
+            message: __(
+                "messages.store" ,
+                ["attribute" => "کاربر"]),
+            data: new UserResource($instance)
+        );
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show(string $id): JsonResponse { 
+        
+        $instance = $this->userService->find($id);
+        
+        // check policy
+        $this->authorize('view', $instance);
+        
+        return apiResponse(
+            success:true,
+            message:__("messages.show", ["attribute"=> "کاربر" ]),
+            data: new UserResource($instance)
+        );
+    }
+
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(UserUpdateRequest $requestUpdate,string $id) {
+        //validation
+        $validatedData = $requestUpdate->validated();
+
+        // get instance that we want to update
+        $instance = $this->userService->find($id);
+        
+        // check policy
+        $this->authorize('update', $instance);
+
+        $instance->update($validatedData);
+
+        return apiResponse(
+            message: __(
+                "messages.update",
+                ["attribute"=> "کاربر" ]),
+            data: new UserResource($instance)
+        );
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(string $id): JsonResponse {
+        
+        // get instance that we want to delete
+        $instance = $this->userService->find($id);
+        
+        // check policy
+        $this->authorize('delete', $instance);
+        
+        //remove instance
+        $instance->delete();
+        
+        return apiResponse(
+            message: __(
+                "messages.delete",
+                ["attribute" =>  "کاربر",
+                'number' => $instance->id]
+            ));
+    }
+
     /**
      * Assign permission to a user based on its role
      */
@@ -107,106 +214,4 @@ class UserController extends Controller
         );    
     }
 
-     /**
-     * Display a listing of the users.
-     */
-    public function index(Request $request) {
-        // dd( Auth::user()->permissions->pluck('title')->contains('users:viewAny'));
-        
-        // check policy
-        //permissions
-        // if (!Auth::user()->can('viewAny',User::class)) {
-        //     return apiResponse(message:__("messages.non_authorized"), statusCode:403);
-        // }
-        $this->authorize('viewAny', User::class);
-
-        $users = User::searchRecords($request->toArray())->addedQuery();
-        $usersColl = UserResource::collection($users['data'] ?? $users);
-       
-        return apiResponse(
-            success:true,
-            message:__("messages.index", ["attribute"=>"کاربران"]),
-            data: $usersColl->resource,
-            // data: (User::searchRecords($request->toArray())->addedQuery()),
-        );
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(UserCreateRequest $requestCreate)
-    {
-        // check policy
-        $this->authorize('create', User::class);
-
-        //validation
-        $validatedData = $requestCreate->validated();
-
-        $instance = User::create($validatedData);
-        return apiResponse(
-            message: __(
-                "messages.store" ,
-                ["attribute" => "کاربر"]),
-            data: new UserResource($instance)
-        );
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id): JsonResponse {
-       
-        $instance = User::findOrFail($id);//->searchRecords($request->toArray())->addedQuery(),
-        
-        // check policy
-        $this->authorize('view', $instance);
-        
-        return apiResponse(
-            success:true,
-            message:__("messages.show", ["attribute"=> "کاربر" ]),
-            data: new UserResource($instance)
-        );
-    }
-
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UserUpdateRequest $requestUpdate,string $id) {
-        //validation
-        $validatedData = $requestUpdate->validated();
-
-        // get instance that we want to update
-        $instance = User::findOrFail($id);
-        
-        // check policy
-        $this->authorize('update', $instance);
-
-        $instance->update($validatedData);
-        return apiResponse(
-            message: __(
-                "messages.update",
-                ["attribute"=> "کاربر" ]),
-            data: new UserResource($instance)
-        );
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id): JsonResponse {
-        // get instance that we want to delete
-        $instance = User::findOrFail($id);
-        
-        // check policy
-        $this->authorize('delete', $instance);
-        
-        $instance->delete();
-        return apiResponse(
-            message: __(
-                "messages.delete",
-                ["attribute" =>  "کاربر",
-                'number' => $instance->id]
-            ));
-    }
 }

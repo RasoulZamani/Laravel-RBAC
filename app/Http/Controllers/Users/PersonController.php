@@ -8,12 +8,14 @@ use App\Http\Requests\Persons\PersonUpdateRequest;
 use App\Http\Controllers\BaseCRUD\BaseCRUDController;
 use App\Http\Requests\Persons\PersonCreateRequest;
 use App\Http\Resources\PersonResource;
+use App\Services\Person\PersonService;
 
 class PersonController extends BaseCRUDController
 {
     //pass argument needed to inherit from BaseCRUDController
     public function __construct(
         Person $person,
+        $service = PersonService::class,
         $persianNameSingle="فرد",
         $persianNamePlural="افراد",
         $updateRequest=PersonUpdateRequest::class,
@@ -22,6 +24,7 @@ class PersonController extends BaseCRUDController
     {
         parent::__construct(
             model: $person,
+            service: $service,
             persianNameSingle:$persianNameSingle,
             persianNamePlural: $persianNamePlural,
             updateRequest: $updateRequest,

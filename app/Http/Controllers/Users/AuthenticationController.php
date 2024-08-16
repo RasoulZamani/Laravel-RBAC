@@ -10,23 +10,90 @@ use App\Models\EducationLevel;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
+use App\Services\Person\PersonService;
 use App\Http\Requests\Users\LoginRequest;
-use App\Http\Requests\Users\RegisterRequest;
+use App\Services\User\UserServiceInterface;
 use App\Http\Requests\Users\UserCreateRequest;
 use App\Http\Requests\Users\UserUpdateRequest;
+use App\Http\Requests\Users\RegisterUserRequest;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
-class AuthController extends Controller
+class AuthenticationController extends Controller
 {
-    /**
+
+    protected $userService;
+    protected $personService;
+
+    public function __construct(UserServiceInterface $userService, PersonService $personService)
+    {
+        $this->userService = $userService;
+        $this->personService = $personService;
+
+    }
+    
+
+    /*****************************************************************
+     * Register User from base 
+     */
+    public function registerUser(RegisterUserRequest $registerRequest):JsonResponse {
+        // we should create person and user in this endpoint
+       
+        //validation
+        $registerRequest->validated($registerRequest->all());
+        
+        $personAttributes = [
+            'name' => $registerRequest->name,
+            'last_name' => $registerRequest->last_name,
+            'father_name' =>  $registerRequest->father_name ,
+            'alias_name' => $registerRequest->alias_name ,
+            'gender' => $registerRequest->gender ,
+            'is_legal' => $registerRequest->is_legal ,
+            'national_code' => $registerRequest->national_code ,
+            'mobile_number' => $registerRequest->mobile_number,
+            'email' => $registerRequest-> email,
+            'birth_date' => $registerRequest->birth_date ,
+            
+            'education_level_id' => $registerRequest->education_level_id ,
+            'image_id' => $registerRequest-> image_id,
+        ];
+
+        // create person
+        $createdPerson = Person::create();
+
+
+        // get default role
+
+        $userAttributes = [
+            'username' => $registerRequest->username,
+            'password' => Hash::make($registerRequest->password),
+            'is_active' => $registerRequest->is_active ?? True,
+            //'role_id' => null, // at first we assign default role to user, then we can promote it in another point
+            'person_id' => $createdPerson->id,
+        ];
+
+        // create user
+        User::create();
+
+        return apiResponse(message:__("messages.register_user"));
+    
+    }
+
+    /*****************************************************************
+     * Register user by person_id
+     */
+    public function registerUserAndPerson(){}
+
+
+
+    /*****************************************************************
      * Log out
      */ 
     public function logout(Request $request) {
         $request->user()->currentAccessToken()->delete();
         return apiResponse(message: __("messages.logout"));
     }
-    
-    /**
+
+    /*****************************************************************
      * Login
      */
     public function login(LoginRequest $loginRequest):JsonResponse {
@@ -78,61 +145,4 @@ class AuthController extends Controller
         
     }
 
-    // Register User
-    public function register(RegisterRequest $registerRequest):JsonResponse {
-        // we should create person and user in this endpoint
-       
-        //validation
-        $registerRequest->validated($registerRequest->all());
-        // check relations
-        if ($registerRequest->education_level_id) {
-            try {
-                $educationLevel = EducationLevel::findOrFail($registerRequest->education_level_id);
-            } catch(ModelNotFoundException $e) {
-                return apiResponse(message: __(
-                    "messages.not_found_education_level",
-                    ["id" =>  $registerRequest->education_level_id],
-                ), statusCode:404);
-            }
-        }
-        if ($registerRequest->image_id) {
-            try {
-                $imageName = Image::findOrFail($registerRequest->image_id);
-            } catch(ModelNotFoundException $e) {
-                return apiResponse(message: __(
-                    "messages.not_found_image",
-                    ["id" =>  $registerRequest->image_id],
-                ), statusCode:404);
-            }
-        }
-
-        // create person 
-        $createdPerson = Person::create([
-            'name' => $registerRequest->name,
-            'last_name' => $registerRequest->last_name,
-            'father_name' =>  $registerRequest->father_name ,
-            'alias_name' => $registerRequest->alias_name ,
-            'gender' => $registerRequest->gender ,
-            'is_legal' => $registerRequest->is_legal ,
-            'national_code' => $registerRequest->national_code ,
-            'mobile_number' => $registerRequest->mobile_number,
-            'email' => $registerRequest-> email,
-            'birth_date' => $registerRequest->birth_date ,
-            
-            'education_level_id' => $registerRequest->education_level_id ,
-            'image_id' => $registerRequest-> image_id,
-        ]);
-
-        // create user
-        User::create([
-            'username' => $registerRequest->username,
-            'password' => Hash::make($registerRequest->password),
-            'is_active' => $registerRequest->is_active ?? True,
-            //'role_id' => null, // for default user role will be null
-            'person_id' => $createdPerson->id,
-        ]);
-    
-        return apiResponse(message:__("messages.register_user"));
-    
-    }
 }

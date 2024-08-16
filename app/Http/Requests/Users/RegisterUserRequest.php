@@ -4,7 +4,7 @@ namespace App\Http\Requests\Users;
 
 use App\Http\Requests\BaseRequest\BaseRequest;
 
-class registerRequest extends BaseRequest
+class RegisterUserRequest extends BaseRequest
 {
 
     /**

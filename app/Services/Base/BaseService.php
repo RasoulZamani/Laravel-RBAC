@@ -15,6 +15,7 @@ class BaseService implements BaseServiceInterface
 
     public function findAll()
     {
+        
         return $this->repository->findAll();
     }
 

@@ -3,9 +3,11 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use App\Repositories\Role\RoleRepository;
 use App\Repositories\User\UserRepository;
 use App\Repositories\Person\PersonRepository;
 use App\Repositories\UserType\UserTypeRepository;
+use App\Repositories\Role\RoleRepositoryInterface;
 use App\Repositories\User\UserRepositoryInterface;
 use App\Repositories\Person\PersonRepositoryInterface;
 use App\Repositories\UserType\UserTypeRepositoryInterface;
@@ -21,9 +23,9 @@ class RepositoryServiceProvider extends ServiceProvider
     {
         $this->app->bind(EducationLevelRepositoryInterface::class, EducationLevelRepository::class);
         $this->app->bind(PersonRepositoryInterface::class, PersonRepository::class);
+        $this->app->bind(RoleRepositoryInterface::class, RoleRepository::class);
         $this->app->bind(UserRepositoryInterface::class, UserRepository::class);
         $this->app->bind(UserTypeRepositoryInterface::class, UserTypeRepository::class);
-
     }
 
     /**

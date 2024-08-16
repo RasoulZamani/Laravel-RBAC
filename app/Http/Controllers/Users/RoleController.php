@@ -8,7 +8,9 @@ use App\Http\Requests\Roles\RoleCreateRequest;
 use App\Http\Requests\Roles\RoleUpdateRequest;
 use App\Http\Controllers\BaseCRUD\BaseCRUDController;
 use App\Http\Requests\Users\AddOrRemovePermissionToRoleRequest;
+use App\Http\Resources\PermissionResource;
 use App\Http\Resources\RoleResource;
+use App\Services\Role\RoleService;
 
 class RoleController extends BaseCRUDController
 {
@@ -16,6 +18,7 @@ class RoleController extends BaseCRUDController
     //pass argument needed to inherit from BaseCRUDController
     public function __construct(
         Role $role,
+        $service=RoleService::class,
         $persianNameSingle="نقش",
         $persianNamePlural="نقش ها",
         $updateRequest=RoleUpdateRequest::class,
@@ -24,6 +27,7 @@ class RoleController extends BaseCRUDController
     {
         parent::__construct(
             model: $role,
+            service: $service,
             persianNameSingle:$persianNameSingle,
             persianNamePlural: $persianNamePlural,
             updateRequest: $updateRequest,
@@ -32,79 +36,43 @@ class RoleController extends BaseCRUDController
     }
 
    
-   /**
-    * Get permissions assigned to role
+   /******************************************************************
+    * Get all permissions assigned to a role
     */
     public function permissionsOfRole(string $role_id) {
-        // fetch user by user_id
-        $role = Role::findOrFail($role_id);
+        $rolePermissions = $this->service->getPermissions($role_id);
+        $rolePermissionsCollection = PermissionResource::collection($rolePermissions);
         return apiResponse(
             message: __("messages.index", ["attribute"=> "دسترسی های نقش"]),
-            data:[ $role->permissions],
+            data: $rolePermissionsCollection,
         );
     }
 
-    /**
+    /*****************************************************************
      * Assign permissions to a role
      */
     public function addPermissionToRole(AddOrRemovePermissionToRoleRequest $addPermissionToRoleRequest) {
-        // validation
+        // validation and extract data from request
         $validatedData = $addPermissionToRoleRequest->validated();
 
-        //fetch role with this role_id and load its role
-        $role = Role::with('permissions')->findOrFail($validatedData['role_id']);
-
-        // fetch existing permissions for this user
-        $existingPermissions = $role->permissions;
-        // dd($existingPermissions); 
-        // check if permissions are already not assigned
-        foreach($validatedData['permission_ids'] as $permissionId) {
-            if ($existingPermissions->contains($permissionId)) {
-                return apiResponse(
-                    message: __("messages.permission_is_already_exists_for_this_role"),
-                    data: ["permission_already_exists_id" => $permissionId],
-                    statusCode:400,
-                );
-            }
-        }
-        // add permissions to role
-        $role->permissions()->attach($validatedData['permission_ids']);
-        return apiResponse(
-            message: __("messages.attach_permissions_to_role"),
-            //data: ["role_id" => $role->id, "assigned_permissions"=>[$role->permissions]],
-        );
-
+        return $this->service->addPermission(
+            $validatedData["role_id"],
+            $validatedData["permission_ids"]
+        );     
     }
 
-    /**
+    /*****************************************************************
      * Remove Permissions of a role
      */
-    public function removePermissionOfRole(AddOrRemovePermissionToRoleRequest $removePermissionsOfRole) {
+    public function removePermissionOfRole(AddOrRemovePermissionToRoleRequest $removePermissionsOfRoleRequest) {
         // validation
-        $validatedData = $removePermissionsOfRole->validated();
+        $validatedData = $removePermissionsOfRoleRequest->validated();
 
-        //fetch role with this role_id and load its role
-        $role = Role::with('permissions')->findOrFail($validatedData['role_id']);
-
-        // fetch existing permissions for this user
-        $existingPermissions = $role->permissions;
-        // dd($existingPermissions); 
-        // check if permissions is exist  (if not exist we can not delete it)
-        foreach($validatedData['permission_ids'] as $permissionId) {
-            if (!$existingPermissions->contains($permissionId)) {
-                return apiResponse(
-                    message: __("messages.permission_is_not_exists_for_this_role"),
-                    data: ["permission_not_exists_id" => $permissionId],
-                    statusCode:400,
-                );
-            }
-        }
-        // remove permissions of role
-        $role->permissions()->detach($validatedData['permission_ids']);
-        return apiResponse(
-            message: __("messages.detach_permissions_to_role"),
-            //data: ["role_id" => $role->id, "assigned_permissions"=>[$role->permissions]],
-        );    
+        return $this->service->removePermission(
+            $validatedData["role_id"],
+            $validatedData["permission_ids"]
+        );     
     }
+
 }
 

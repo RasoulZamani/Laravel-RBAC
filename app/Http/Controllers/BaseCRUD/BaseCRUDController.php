@@ -36,7 +36,7 @@ class BaseCRUDController extends BaseController
         string $persianNamePlural= "آیتم ها")
     {
         $this->model = $model; 
-        $this->service = $service; 
+        $this->service = app($service); 
         $this->persianNameSingle = $persianNameSingle;
         $this->persianNamePlural = $persianNamePlural;
         $this->createRequest = $createRequest;
@@ -49,14 +49,13 @@ class BaseCRUDController extends BaseController
      * Display a listing of the resource.
      */
     public function index(Request $request) {
-        
         // check permissions by policy
         //$this->model->authorize('viewAny',Auth::user());
         // if (!Auth::user()->can('viewAny',$this->model::class)) {
         //     return apiResponse(message:__("messages.non_authorized"), statusCode:403);
         // }
 
-        $items = app($this->service)->findAll();
+        $items = $this->service->findAll();
         //$items = $this->model::searchRecords($request->toArray())->addedQuery();
         $itemsResource = resolve($this->apiResource, ["resource"=>$items['data'] ?? $items]);//::collection($items['data'] ?? $items);
        
@@ -85,7 +84,7 @@ class BaseCRUDController extends BaseController
         //validation
         $validatedData = app($this->createRequest)->validated();
 
-        $instance = app($this->service)->create($validatedData);
+        $instance = $this->service->create($validatedData);
         
         $instanceResource = resolve($this->apiResource, ["resource"=>$instance]);//::collection($items['data'] ?? $items);
 
@@ -102,7 +101,7 @@ class BaseCRUDController extends BaseController
      */
     public function show(string $id): JsonResponse {
         
-        $instance = app($this->service)->find($id);//->searchRecords($request->toArray())->addedQuery(),
+        $instance = $this->service->find($id);//->searchRecords($request->toArray())->addedQuery(),
         //permissions
         // if (!Auth::user()->can('view', $instance)) {
         //     return apiResponse(message:__("messages.non_authorized"), statusCode:403);
@@ -124,7 +123,7 @@ class BaseCRUDController extends BaseController
         $validatedData = app($this->updateRequest)->validated();
 
         // get instance that we want to update
-        $instance =app($this->service)->find($id);
+        $instance =$this->service->find($id);
         
         //permissions
         // if (!Auth::user()->can('update',$instance)) {
@@ -146,7 +145,7 @@ class BaseCRUDController extends BaseController
      */
     public function destroy(string $id): JsonResponse {
         // get instance that we want to delete
-        $instance = app($this->service)->find($id);
+        $instance = $this->service->find($id);
         
         //permissions
         // if (!Auth::user()->can('delete',$instance)) {

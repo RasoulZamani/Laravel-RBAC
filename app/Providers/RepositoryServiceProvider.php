@@ -9,9 +9,11 @@ use App\Repositories\Person\PersonRepository;
 use App\Repositories\UserType\UserTypeRepository;
 use App\Repositories\Role\RoleRepositoryInterface;
 use App\Repositories\User\UserRepositoryInterface;
+use App\Repositories\Permission\PermissionRepository;
 use App\Repositories\Person\PersonRepositoryInterface;
 use App\Repositories\UserType\UserTypeRepositoryInterface;
 use App\Repositories\EducationLevel\EducationLevelRepository;
+use App\Repositories\Permission\PermissionRepositoryInterface;
 use App\Repositories\EducationLevel\EducationLevelRepositoryInterface;
 
 class RepositoryServiceProvider extends ServiceProvider
@@ -23,6 +25,7 @@ class RepositoryServiceProvider extends ServiceProvider
     {
         $this->app->bind(EducationLevelRepositoryInterface::class, EducationLevelRepository::class);
         $this->app->bind(PersonRepositoryInterface::class, PersonRepository::class);
+        $this->app->bind(PermissionRepositoryInterface::class, PermissionRepository::class);
         $this->app->bind(RoleRepositoryInterface::class, RoleRepository::class);
         $this->app->bind(UserRepositoryInterface::class, UserRepository::class);
         $this->app->bind(UserTypeRepositoryInterface::class, UserTypeRepository::class);

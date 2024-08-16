@@ -10,9 +10,11 @@ use Illuminate\Support\ServiceProvider;
 use App\Services\UserType\UserTypeService;
 use App\Services\Role\RoleServiceInterface;
 use App\Services\User\UserServiceInterface;
+use App\Services\Permission\PermissionService;
 use App\Services\Person\PersonServiceInterface;
 use App\Services\UserType\UserTypeServiceInterface;
 use App\Services\EducationLevel\EducationLevelService;
+use App\Services\Permission\PermissionServiceInterface;
 use App\Services\EducationLevel\EducationLevelServiceInterface;
 
 
@@ -27,6 +29,7 @@ class ServiceServiceProvider extends ServiceProvider
     {
         $this->app->bind(EducationLevelServiceInterface::class, EducationLevelService::class);
         $this->app->bind(PersonServiceInterface::class, PersonService::class);
+        $this->app->bind(PermissionServiceInterface::class, PermissionService::class);
         $this->app->bind(RoleServiceInterface::class, RoleService::class);
         $this->app->bind(UserServiceInterface::class, UserService::class);
         $this->app->bind(UserTypeServiceInterface::class, UserTypeService::class);

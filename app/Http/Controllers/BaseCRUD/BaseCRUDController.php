@@ -49,11 +49,12 @@ class BaseCRUDController extends BaseController
      * Display a listing of the resource.
      */
     public function index(Request $request) {
-        // permissions
+        
+        // check permissions by policy
         //$this->model->authorize('viewAny',Auth::user());
-        if (!Auth::user()->can('viewAny',$this->model::class)) {
-            return apiResponse(message:__("messages.non_authorized"), statusCode:403);
-        }
+        // if (!Auth::user()->can('viewAny',$this->model::class)) {
+        //     return apiResponse(message:__("messages.non_authorized"), statusCode:403);
+        // }
 
         $items = app($this->service)->findAll();
         //$items = $this->model::searchRecords($request->toArray())->addedQuery();
@@ -77,9 +78,9 @@ class BaseCRUDController extends BaseController
     public function store()
     {   
         // permissions
-        if (!Auth::user()->can('create',$this->model::class)) {
-            return apiResponse(message:__("messages.non_authorized"), statusCode:403);
-        }
+        // if (!Auth::user()->can('create',$this->model::class)) {
+        //     return apiResponse(message:__("messages.non_authorized"), statusCode:403);
+        // }
         
         //validation
         $validatedData = app($this->createRequest)->validated();
@@ -103,9 +104,9 @@ class BaseCRUDController extends BaseController
         
         $instance = app($this->service)->find($id);//->searchRecords($request->toArray())->addedQuery(),
         //permissions
-        if (!Auth::user()->can('view', $instance)) {
-            return apiResponse(message:__("messages.non_authorized"), statusCode:403);
-        }
+        // if (!Auth::user()->can('view', $instance)) {
+        //     return apiResponse(message:__("messages.non_authorized"), statusCode:403);
+        // }
         $instanceResource = resolve($this->apiResource, ["resource"=>$instance]);
         return apiResponse(
             success:true,
@@ -126,9 +127,9 @@ class BaseCRUDController extends BaseController
         $instance =app($this->service)->find($id);
         
         //permissions
-        if (!Auth::user()->can('update',$instance)) {
-            return apiResponse(message:__("messages.non_authorized"), statusCode:403);
-        }
+        // if (!Auth::user()->can('update',$instance)) {
+        //     return apiResponse(message:__("messages.non_authorized"), statusCode:403);
+        // }
         
         $instance->update($validatedData);
         $instanceResource = resolve($this->apiResource, ["resource"=>$instance]);
@@ -148,9 +149,9 @@ class BaseCRUDController extends BaseController
         $instance = app($this->service)->find($id);
         
         //permissions
-        if (!Auth::user()->can('delete',$instance)) {
-            return apiResponse(message:__("messages.non_authorized"), statusCode:403);
-        }
+        // if (!Auth::user()->can('delete',$instance)) {
+        //     return apiResponse(message:__("messages.non_authorized"), statusCode:403);
+        // }
         $instance->delete();
         return apiResponse(
             message: __(

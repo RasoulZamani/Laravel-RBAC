@@ -10,11 +10,12 @@ use App\Http\Controllers\Users\UserTypeController;
 use App\Http\Controllers\Users\AuthenticationController;
 use App\Http\Controllers\Users\EducationLevelController;
 
-
+// login and register
 Route::post('/users/login', [AuthenticationController::class, 'login'])->name('login');
 Route::post('/users/register', [AuthenticationController::class, 'register'])->name('register');
 
 Route::group(["middleware"=>["auth:sanctum"] ], function() {
+    // Auth :
     Route::post('/users/logout', [AuthenticationController::class, 'logout'])->name('logout');
     Route::post('/users/add-permissions', [UserController::class, 'addPermissionToUser'])->name('add_permission_to_user');
     Route::get('/users/{user_id}/show-permissions', [UserController::class, 'permissionsOfUser'])->name('show_permissions_of_user');
@@ -25,13 +26,10 @@ Route::group(["middleware"=>["auth:sanctum"] ], function() {
     Route::delete('/roles/remove-permissions', [RoleController::class, 'removePermissionOfRole'])->name('remove_permission_of_role');
     
     Route::apiResource('/users', UserController::class);
-
     Route::apiResource('/roles', RoleController::class);
     Route::apiResource('/persons', PersonController::class);
     Route::apiResource('/user_types', UserTypeController::class);
     Route::apiResource('/education_levels', EducationLevelController::class);
 });
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
+
 

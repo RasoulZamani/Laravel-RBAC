@@ -7,6 +7,8 @@ use App\Repositories\User\UserRepository;
 use App\Repositories\Person\PersonRepository;
 use App\Repositories\User\UserRepositoryInterface;
 use App\Repositories\Person\PersonRepositoryInterface;
+use App\Repositories\EducationLevel\EducationLevelRepository;
+use App\Repositories\EducationLevel\EducationLevelRepositoryInterface;
 
 class RepositoryServiceProvider extends ServiceProvider
 {
@@ -15,9 +17,9 @@ class RepositoryServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-
-        $this->app->bind(UserRepositoryInterface::class, UserRepository::class);
+        $this->app->bind(EducationLevelRepositoryInterface::class, EducationLevelRepository::class);
         $this->app->bind(PersonRepositoryInterface::class, PersonRepository::class);
+        $this->app->bind(UserRepositoryInterface::class, UserRepository::class);
 
     }
 

@@ -31,6 +31,4 @@ class PersonController extends BaseCRUDController
             createRequest: $createRequest,
             apiResource: $apiResource);
     }
-
-
 }

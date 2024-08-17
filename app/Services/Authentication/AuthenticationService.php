@@ -68,9 +68,9 @@ class AuthenticationService implements AuthenticationServiceInterface
         ];
 
         // create user
-        $this->userService->create($userAttributes);
+        $createdUser = $this->userService->create($userAttributes);
 
-        return apiResponse(message:__("messages.register_user"));
+        return apiResponse(message:__("messages.register_user"), data: ["created_user" => $createdUser]);
     } 
 
     /*****************************************************************
@@ -92,9 +92,9 @@ class AuthenticationService implements AuthenticationServiceInterface
         ];
 
         // create user
-        $this->userService->create($userAttributes);
+        $createdUser = $this->userService->create($userAttributes);
 
-        return apiResponse(message:__("messages.register_user"));
+        return apiResponse(message:__("messages.register_user"), data: ["created_user" => $createdUser]);
     } 
 
     /*****************************************************************

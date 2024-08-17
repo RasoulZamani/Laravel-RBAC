@@ -9,7 +9,6 @@ use App\Http\Requests\UserTypes\UserTypeCreateRequest;
 use App\Http\Requests\UserTypes\UserTypeUpdateRequest;
 use App\Http\Resources\UserTypeResource;
 use App\Services\UserType\UserTypeService;
-use Spatie\FlareClient\Api;
 
 class UserTypeController extends BaseCRUDController
 {

@@ -2,14 +2,11 @@
 
 namespace App\Http\Controllers\BaseCRUD;
 
-use App\Models\Role;
-use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use App\Models\BaseModel\BaseModel;
-use Illuminate\Support\Facades\Auth;
-use App\Http\Requests\BaseRequest\BaseRequest;
-use Illuminate\Http\Resources\Json\JsonResource;
+
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
@@ -25,6 +22,7 @@ class BaseCRUDController extends BaseController
     protected $updateRequest;     // request form for validate input update request
     protected $createRequest;     // request form for validate input create request
     protected $apiResource;       // api resource 
+    //protected $policy;            // policy for authorization
     
     protected function __construct(
         BaseModel $model,
@@ -42,18 +40,17 @@ class BaseCRUDController extends BaseController
         $this->createRequest = $createRequest;
         $this->updateRequest = $updateRequest;
         $this->apiResource = $apiResource;
-
+        //$this->policy=Gate::getPolicyFor($model);
     }
 
     /**
      * Display a listing of the resource.
      */
     public function index(Request $request) {
+
         // check permissions by policy
-        //$this->model->authorize('viewAny',Auth::user());
-        // if (!Auth::user()->can('viewAny',$this->model::class)) {
-        //     return apiResponse(message:__("messages.non_authorized"), statusCode:403);
-        // }
+        $this->authorize('viewAny', $this->model::class);
+
 
         $items = $this->service->findAll();
         //$items = $this->model::searchRecords($request->toArray())->addedQuery();
@@ -76,16 +73,14 @@ class BaseCRUDController extends BaseController
      */
     public function store()
     {   
-        // permissions
-        // if (!Auth::user()->can('create',$this->model::class)) {
-        //     return apiResponse(message:__("messages.non_authorized"), statusCode:403);
-        // }
-        
         //validation
         $validatedData = app($this->createRequest)->validated();
 
+        // check permissions by policy
+        $this->authorize('create', $this->model::class);
+
         $instance = $this->service->create($validatedData);
-        
+
         $instanceResource = resolve($this->apiResource, ["resource"=>$instance]);//::collection($items['data'] ?? $items);
 
         return apiResponse(
@@ -102,10 +97,10 @@ class BaseCRUDController extends BaseController
     public function show(string $id): JsonResponse {
         
         $instance = $this->service->find($id);//->searchRecords($request->toArray())->addedQuery(),
-        //permissions
-        // if (!Auth::user()->can('view', $instance)) {
-        //     return apiResponse(message:__("messages.non_authorized"), statusCode:403);
-        // }
+        
+        // check permissions by policy
+        $this->authorize('view', $instance);
+
         $instanceResource = resolve($this->apiResource, ["resource"=>$instance]);
         return apiResponse(
             success:true,
@@ -113,7 +108,6 @@ class BaseCRUDController extends BaseController
             data: $instanceResource
         );
     }
-
 
     /**
      * Update the specified resource in storage.
@@ -131,6 +125,10 @@ class BaseCRUDController extends BaseController
         // }
         
         $instance->update($validatedData);
+
+        // check permissions by policy
+        $this->authorize('update', $instance);
+
         $instanceResource = resolve($this->apiResource, ["resource"=>$instance]);
         return apiResponse(
             message: __(
@@ -147,10 +145,9 @@ class BaseCRUDController extends BaseController
         // get instance that we want to delete
         $instance = $this->service->find($id);
         
-        //permissions
-        // if (!Auth::user()->can('delete',$instance)) {
-        //     return apiResponse(message:__("messages.non_authorized"), statusCode:403);
-        // }
+        // check permissions by policy
+        $this->authorize('delete', $this->model::class);
+
         $instance->delete();
         return apiResponse(
             message: __(

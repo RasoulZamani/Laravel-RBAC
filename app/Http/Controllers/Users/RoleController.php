@@ -10,6 +10,7 @@ use App\Http\Controllers\BaseCRUD\BaseCRUDController;
 use App\Http\Requests\Users\AddOrRemovePermissionToRoleRequest;
 use App\Http\Resources\PermissionResource;
 use App\Http\Resources\RoleResource;
+use App\Models\PermissionRole;
 use App\Services\Role\RoleService;
 
 class RoleController extends BaseCRUDController
@@ -40,6 +41,10 @@ class RoleController extends BaseCRUDController
     * Get all permissions assigned to a role
     */
     public function permissionsOfRole(string $role_id) {
+        
+        // check permissions
+        $this->authorize('view', PermissionRole::class);
+
         $rolePermissions = $this->service->getPermissions($role_id);
         $rolePermissionsCollection = PermissionResource::collection($rolePermissions);
         return apiResponse(
@@ -52,6 +57,10 @@ class RoleController extends BaseCRUDController
      * Assign permissions to a role
      */
     public function addPermissionToRole(AddOrRemovePermissionToRoleRequest $addPermissionToRoleRequest) {
+        
+        // check permissions
+        $this->authorize('create', PermissionRole::class);
+
         // validation and extract data from request
         $validatedData = $addPermissionToRoleRequest->validated();
 
@@ -65,6 +74,10 @@ class RoleController extends BaseCRUDController
      * Remove Permissions of a role
      */
     public function removePermissionOfRole(AddOrRemovePermissionToRoleRequest $removePermissionsOfRoleRequest) {
+        
+        // check permissions
+        $this->authorize('delete', PermissionRole::class);
+
         // validation
         $validatedData = $removePermissionsOfRoleRequest->validated();
 

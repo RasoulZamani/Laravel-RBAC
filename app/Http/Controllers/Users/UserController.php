@@ -4,11 +4,13 @@ namespace App\Http\Controllers\Users;
 
 use App\Models\User;
 
+use App\Models\Permission;
 use Illuminate\Http\Request;
+use App\Models\PermissionUser;
 use Illuminate\Http\JsonResponse;
+
 use App\Http\Controllers\Controller;
 use App\Http\Resources\UserResource;
-
 use App\Http\Resources\PermissionResource;
 use App\Services\User\UserServiceInterface;
 use App\Http\Requests\Users\UserCreateRequest;
@@ -135,6 +137,10 @@ class UserController extends Controller
     * Get all permissions assigned to a user
     */
     public function permissionsOfUser(string $user_id) {
+        
+        // check permissions
+        $this->authorize('view', PermissionUser::class);
+
         $userPermissions = $this->userService->getPermissions($user_id);
         $userPermissionsCollection = PermissionResource::collection($userPermissions);
         return apiResponse(
@@ -150,6 +156,9 @@ class UserController extends Controller
         // validation
         $validatedData = $addPermissionToUserRequest->validated();
 
+        // check permissions
+        $this->authorize('create', PermissionUser::class);
+
         return $this->userService->addPermission(
             $validatedData['user_id'],
             $validatedData['permission_ids'],
@@ -162,6 +171,9 @@ class UserController extends Controller
     public function removePermissionOfUser(AddOrRemovePermissionToUserRequest $removePermissionsOfUser) {
         // validation
         $validatedData = $removePermissionsOfUser->validated();
+
+        // check permissions
+        $this->authorize('delete', PermissionUser::class);
 
         return $this->userService->removePermission(
             $validatedData['user_id'],

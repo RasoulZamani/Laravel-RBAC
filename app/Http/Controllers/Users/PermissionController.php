@@ -2,19 +2,12 @@
 
 namespace App\Http\Controllers\Users;
 
-use App\Models\Role;
 use App\Models\Permission;
-use Illuminate\Http\Request;
-use App\Services\Role\RoleService;
-use App\Http\Resources\RoleResource;
 use App\Http\Resources\PermissionResource;
-use App\Http\Requests\Roles\RoleCreateRequest;
-use App\Http\Requests\Roles\RoleUpdateRequest;
 use App\Services\Permission\PermissionService;
 use App\Http\Controllers\BaseCRUD\BaseCRUDController;
 use App\Http\Requests\Permissions\PermissionCreateRequest;
 use App\Http\Requests\Permissions\PermissionUpdateRequest;
-use App\Http\Requests\Users\AddOrRemovePermissionToRoleRequest;
 
 class PermissionController extends BaseCRUDController
 {
